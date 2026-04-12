@@ -61,6 +61,7 @@ const Interview = () => {
     const [ activeNav, setActiveNav ] = useState('technical')
     const { report, getReportById, loading, getResumePdf } = useInterview()
     const { interviewId } = useParams()
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (interviewId) {
@@ -101,6 +102,10 @@ const Interview = () => {
                                 {item.label}
                             </button>
                         ))}
+                    </div>
+                    <div className='nav-actions'>
+                        <button className='nav-action-button' onClick={() => navigate(-1)}>Back</button>
+                        <button className='nav-action-button' onClick={() => navigate('/')}>Home</button>
                     </div>
                     <button
                         onClick={() => { getResumePdf(interviewId) }}

@@ -110,6 +110,30 @@ $severity-low: #3fb950;
     }
 }
 
+.nav-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0 0.5rem 0.75rem;
+}
+
+.nav-action-button {
+    width: 100%;
+    border: 1px solid $border-color;
+    border-radius: 0.5rem;
+    padding: 0.55rem 0.75rem;
+    background-color: $bg-panel;
+    color: $text-primary;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+
+    &:hover {
+        border-color: $accent;
+        color: $accent;
+    }
+}
+
 // ── Center Content ────────────────────────────────────────────────────────────
 .interview-content {
     flex: 1;
