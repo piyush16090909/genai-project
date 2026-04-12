@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router'
 
 const Home = () => {
 
-    const { loading, generateReport, reports } = useInterview()
+    const { loading, generateReport, reports, deleteReport } = useInterview()
     const { handleLogout } = useAuth()
     const [ jobDescription, setJobDescription ] = useState("")
     const [ selfDescription, setSelfDescription ] = useState("")
@@ -29,6 +29,15 @@ const Home = () => {
     const handleLogoutClick = async () => {
         await handleLogout()
         navigate('/login')
+    }
+
+    const handleDeleteReport = async (e, interviewId) => {
+        e.stopPropagation()
+        const shouldDelete = window.confirm("Delete this interview report?")
+        if (!shouldDelete) {
+            return
+        }
+        await deleteReport(interviewId)
     }
 
     const handleResumeChange = (e) => {
@@ -145,6 +154,7 @@ const Home = () => {
                             />
                         </div>
 
+
                         {/* Info Box */}
                         <div className='info-box'>
                             <span className='info-box__icon'>
@@ -175,7 +185,16 @@ const Home = () => {
                     <ul className='reports-list'>
                         {reports.map(report => (
                             <li key={report._id} className='report-item' onClick={() => navigate(`/interview/${report._id}`)}>
-                                <h3>{report.title || 'Untitled Position'}</h3>
+                                <div className='report-item__header'>
+                                    <h3>{report.title || 'Untitled Position'}</h3>
+                                    <button
+                                        type='button'
+                                        className='report-item__delete'
+                                        onClick={(e) => handleDeleteReport(e, report._id)}
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
                                 <p className='report-meta'>Generated on {new Date(report.createdAt).toLocaleDateString()}</p>
                                 <p className={`match-score ${report.matchScore >= 80 ? 'score--high' : report.matchScore >= 60 ? 'score--mid' : 'score--low'}`}>Match Score: {report.matchScore}%</p>
                             </li>

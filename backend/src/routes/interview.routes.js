@@ -37,6 +37,32 @@ interviewRouter.get("/", authMiddleware.authUser, interviewController.getAllInte
  */
 interviewRouter.post("/resume/pdf/:interviewReportId", authMiddleware.authUser, interviewController.generateResumePdfController)
 
+/**
+ * @route POST /api/interview/resume/template/:interviewReportId
+ * @description generate resume pdf using a selected template.
+ * @access private
+ */
+interviewRouter.post(
+	"/resume/template/:interviewReportId",
+	authMiddleware.authUser,
+	upload.single("template"),
+	interviewController.generateResumePdfWithTemplateController
+)
+
+/**
+ * @route POST /api/interview/roadmap/:interviewId
+ * @description regenerate roadmap based on desired days.
+ * @access private
+ */
+interviewRouter.post("/roadmap/:interviewId", authMiddleware.authUser, interviewController.regenerateRoadmapController)
+
+/**
+ * @route DELETE /api/interview/:interviewId
+ * @description delete interview report by interviewId.
+ * @access private
+ */
+interviewRouter.delete("/:interviewId", authMiddleware.authUser, interviewController.deleteInterviewReportController)
+
 
 
 module.exports = interviewRouter

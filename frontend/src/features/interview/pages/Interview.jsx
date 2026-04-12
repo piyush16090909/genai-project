@@ -59,7 +59,9 @@ const RoadMapDay = ({ day }) => (
 // ── Main Component ────────────────────────────────────────────────────────────
 const Interview = () => {
     const [ activeNav, setActiveNav ] = useState('technical')
-    const { report, getReportById, loading, getResumePdf } = useInterview()
+    const [ roadmapDays, setRoadmapDays ] = useState("")
+    const [ roadmapError, setRoadmapError ] = useState("")
+    const { report, getReportById, loading, getResumePdf, updateRoadmap } = useInterview()
     const { interviewId } = useParams()
     const navigate = useNavigate()
 
@@ -68,6 +70,18 @@ const Interview = () => {
             getReportById(interviewId)
         }
     }, [ interviewId ])
+
+    const handleRegenerateRoadmap = async () => {
+        const normalized = Number(roadmapDays)
+        if (!Number.isFinite(normalized) || normalized <= 0) {
+            setRoadmapError("Enter a valid number of days.")
+            return
+        }
+
+        setRoadmapError("")
+        await updateRoadmap({ interviewId, roadmapDays: normalized })
+    }
+
 
 
 
@@ -106,6 +120,7 @@ const Interview = () => {
                     <div className='nav-actions'>
                         <button className='nav-action-button' onClick={() => navigate(-1)}>Back</button>
                         <button className='nav-action-button' onClick={() => navigate('/')}>Home</button>
+                        <button className='nav-action-button' onClick={() => navigate(`/resume-template/${interviewId}`)}>Resume Templates</button>
                     </div>
                     <button
                         onClick={() => { getResumePdf(interviewId) }}
@@ -153,6 +168,27 @@ const Interview = () => {
                                 <h2>Preparation Road Map</h2>
                                 <span className='content-header__count'>{report.preparationPlan.length}-day plan</span>
                             </div>
+                            <div className='roadmap-controls'>
+                                <div className='roadmap-controls__field'>
+                                    <label htmlFor='roadmapDays'>Roadmap Days</label>
+                                    <input
+                                        id='roadmapDays'
+                                        type='number'
+                                        min='1'
+                                        max='60'
+                                        inputMode='numeric'
+                                        value={roadmapDays}
+                                        onChange={(e) => setRoadmapDays(e.target.value)}
+                                    />
+                                </div>
+                                <button className='roadmap-controls__button' onClick={handleRegenerateRoadmap}>
+                                    Generate Roadmap
+                                </button>
+                                {roadmapError && <p className='roadmap-controls__error'>{roadmapError}</p>}
+                            </div>
+                            {report.preparationPlan.length === 0 && (
+                                <p className='roadmap-empty'>Enter days and generate your roadmap.</p>
+                            )}
                             <div className='roadmap-list'>
                                 {report.preparationPlan.map((day) => (
                                     <RoadMapDay key={day.day} day={day} />
@@ -192,6 +228,17 @@ const Interview = () => {
                     </div>
 
                 </aside>
+                <button
+                    type='button'
+                    className='floating-chat'
+                    onClick={() => navigate(`/chat/${interviewId}`)}
+                    aria-label='Open chat'
+                >
+                    <svg viewBox='0 0 24 24' aria-hidden='true'>
+                        <path d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' />
+                    </svg>
+                    Chatbot
+                </button>
             </div>
         </div>
     )

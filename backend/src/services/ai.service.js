@@ -25,11 +25,12 @@ async function postToAiService(path, payload) {
     }
 }
 
-async function generateInterviewReport({ resume, selfDescription, jobDescription }) {
+async function generateInterviewReport({ resume, selfDescription, jobDescription, roadmapDays }) {
     return postToAiService("/interview-report", {
         resume,
         selfDescription,
-        jobDescription
+        jobDescription,
+        roadmapDays
     })
 }
 
@@ -54,11 +55,13 @@ async function generatePdfFromHtml(htmlContent) {
     return pdfBuffer
 }
 
-async function generateResumePdf({ resume, selfDescription, jobDescription }) {
+async function generateResumePdf({ resume, selfDescription, jobDescription, templateType, templateText }) {
     const response = await postToAiService("/resume-html", {
         resume,
         selfDescription,
-        jobDescription
+        jobDescription,
+        templateType,
+        templateText
     })
 
     if (!response?.html) {
@@ -71,4 +74,12 @@ async function generateResumePdf({ resume, selfDescription, jobDescription }) {
 
 }
 
-module.exports = { generateInterviewReport, generateResumePdf }
+async function chatWithAi({ message, history, context }) {
+    return postToAiService("/chat", {
+        message,
+        history,
+        context
+    })
+}
+
+module.exports = { generateInterviewReport, generateResumePdf, chatWithAi }

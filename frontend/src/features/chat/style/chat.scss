@@ -1,0 +1,210 @@
+$bg-page: #0d1117;
+$bg-card: #161b22;
+$bg-panel: #1c2230;
+$bg-input: #1e2535;
+$border-color: #2a3348;
+$text-primary: #e6edf3;
+$text-muted: #7d8590;
+$accent: #ff2d78;
+$font-stack: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+.chat-page {
+    width: 100%;
+    min-height: 100vh;
+    background-color: $bg-page;
+    color: $text-primary;
+    font-family: $font-stack;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.chat-card {
+    width: min(900px, 100%);
+    background: linear-gradient(160deg, rgba(255, 45, 120, 0.08), transparent 45%), $bg-card;
+    border: 1px solid $border-color;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    gap: 1rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+.chat-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+
+    &__text {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    &__actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    h1 {
+        margin: 0 0 0.35rem;
+        font-size: 1.75rem;
+    }
+
+    p {
+        margin: 0;
+        color: $text-muted;
+        font-size: 0.9rem;
+    }
+}
+
+.chat-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: 1px solid $border-color;
+    border-radius: 0.6rem;
+    padding: 0.45rem 0.75rem;
+    background-color: $bg-panel;
+    color: $text-primary;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background-color 0.2s;
+
+    svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    &:hover {
+        border-color: $accent;
+        color: $accent;
+        background-color: rgba($accent, 0.12);
+    }
+}
+
+
+.chat-messages {
+    background-color: $bg-panel;
+    border: 1px solid $border-color;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    min-height: 320px;
+    max-height: 420px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+}
+
+.chat-empty {
+    color: $text-muted;
+    text-align: center;
+}
+
+.chat-message {
+    display: flex;
+
+    &__bubble {
+        padding: 0.6rem 0.9rem;
+        border-radius: 0.75rem;
+        max-width: 70%;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        background-color: $bg-input;
+        border: 1px solid $border-color;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    &--user {
+        justify-content: flex-end;
+
+        .chat-message__bubble {
+            background-color: rgba($accent, 0.15);
+            border-color: rgba($accent, 0.4);
+        }
+    }
+
+    &--assistant {
+        justify-content: flex-start;
+    }
+}
+
+.chat-error {
+    margin: 0;
+    color: $accent;
+    font-size: 0.85rem;
+}
+
+.chat-input {
+    display: flex;
+    gap: 0.75rem;
+
+    textarea {
+        flex: 1;
+        background-color: $bg-input;
+        border: 1px solid $border-color;
+        border-radius: 0.6rem;
+        padding: 0.65rem 0.9rem;
+        color: $text-primary;
+        font-family: $font-stack;
+        resize: none;
+        outline: none;
+
+        &:focus {
+            border-color: $accent;
+        }
+    }
+
+    button {
+        background: linear-gradient(135deg, $accent 0%, darken($accent, 10%) 100%);
+        color: #fff;
+        border: none;
+        border-radius: 0.6rem;
+        padding: 0.65rem 1.2rem;
+        cursor: pointer;
+        font-weight: 600;
+        transition: opacity 0.2s, transform 0.1s;
+
+        &:hover {
+            opacity: 0.9;
+        }
+
+        &:active {
+            transform: scale(0.98);
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    }
+}
+
+@media (max-width: 720px) {
+    .chat-card {
+        padding: 1.25rem;
+    }
+
+    .chat-messages {
+        max-height: 360px;
+    }
+
+    .chat-message__bubble {
+        max-width: 100%;
+    }
+
+    .chat-input {
+        flex-direction: column;
+
+        button {
+            width: 100%;
+        }
+    }
+}

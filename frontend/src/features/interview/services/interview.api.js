@@ -59,3 +59,43 @@ export const generateResumePdf = async ({ interviewReportId }) => {
 
     return response
 }
+
+/**
+ * @description Service to generate resume pdf with a selected template.
+ */
+export const generateResumePdfWithTemplate = async ({ interviewReportId, templateType, templateFile }) => {
+    const formData = new FormData()
+    formData.append("templateType", templateType || "default")
+    if (templateFile) {
+        formData.append("template", templateFile)
+    }
+
+    const response = await api.post(`/api/interview/resume/template/${interviewReportId}`, formData, {
+        responseType: "blob",
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
+    })
+
+    return response
+}
+
+/**
+ * @description Service to regenerate roadmap based on desired days.
+ */
+export const regenerateRoadmap = async ({ interviewId, roadmapDays }) => {
+    const response = await api.post(`/api/interview/roadmap/${interviewId}`, {
+        roadmapDays
+    })
+
+    return response.data
+}
+
+/**
+ * @description Service to delete an interview report by id.
+ */
+export const deleteInterviewReport = async (interviewId) => {
+    const response = await api.delete(`/api/interview/${interviewId}`)
+
+    return response.data
+}

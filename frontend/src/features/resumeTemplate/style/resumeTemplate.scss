@@ -1,0 +1,163 @@
+$bg-page: #0d1117;
+$bg-card: #161b22;
+$bg-panel: #1c2230;
+$bg-input: #1e2535;
+$border-color: #2a3348;
+$text-primary: #e6edf3;
+$text-muted: #7d8590;
+$accent: #ff2d78;
+$font-stack: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+.resume-template-page {
+    min-height: 100vh;
+    background-color: $bg-page;
+    color: $text-primary;
+    font-family: $font-stack;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.resume-template-card {
+    width: min(900px, 100%);
+    background-color: $bg-card;
+    border: 1px solid $border-color;
+    border-radius: 1rem;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+.resume-template-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+
+    h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.8rem;
+    }
+
+    p {
+        margin: 0;
+        color: $text-muted;
+    }
+}
+
+.resume-template-actions {
+    display: flex;
+    gap: 0.5rem;
+
+    button {
+        border: 1px solid $border-color;
+        background-color: $bg-panel;
+        color: $text-primary;
+        padding: 0.45rem 0.75rem;
+        border-radius: 0.6rem;
+        cursor: pointer;
+        transition: border-color 0.2s, color 0.2s;
+
+        &:hover {
+            border-color: $accent;
+            color: $accent;
+        }
+    }
+}
+
+.resume-template-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+
+    select {
+        background-color: $bg-input;
+        border: 1px solid $border-color;
+        border-radius: 0.6rem;
+        padding: 0.6rem 0.75rem;
+        color: $text-primary;
+        font-family: $font-stack;
+    }
+}
+
+.resume-template-label {
+    font-size: 0.85rem;
+    color: $text-muted;
+}
+
+.resume-template-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.template-chip {
+    border: 1px solid $border-color;
+    background-color: $bg-panel;
+    color: $text-primary;
+    border-radius: 999px;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: border-color 0.2s, color 0.2s, background-color 0.2s;
+
+    &--active {
+        border-color: $accent;
+        color: $accent;
+        background-color: rgba($accent, 0.12);
+    }
+}
+
+.template-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+
+    input {
+        color: $text-primary;
+    }
+}
+
+.resume-template-error {
+    color: $accent;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.resume-template-generate {
+    align-self: flex-start;
+    border: none;
+    border-radius: 0.6rem;
+    padding: 0.65rem 1.4rem;
+    background: linear-gradient(135deg, $accent 0%, darken($accent, 10%) 100%);
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+    transition: opacity 0.2s, transform 0.1s;
+
+    &:hover {
+        opacity: 0.9;
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+@media (max-width: 720px) {
+    .resume-template-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .resume-template-actions {
+        width: 100%;
+    }
+}
