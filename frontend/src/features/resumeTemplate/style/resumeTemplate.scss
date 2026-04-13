@@ -6,44 +6,51 @@ $border-color: #2a3348;
 $text-primary: #e6edf3;
 $text-muted: #7d8590;
 $accent: #ff2d78;
-$font-stack: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+$font-stack: "Space Grotesk", "Instrument Sans", sans-serif;
 
 .resume-template-page {
     min-height: 100vh;
-    background-color: $bg-page;
+    background: radial-gradient(circle at 50% 0%, rgba(255, 45, 120, 0.08), transparent 40%), #040c19;
     color: $text-primary;
     font-family: $font-stack;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem 1rem;
+    padding: 2rem;
 }
 
 .resume-template-card {
-    width: min(900px, 100%);
-    background-color: $bg-card;
-    border: 1px solid $border-color;
-    border-radius: 1rem;
-    padding: 1.75rem;
+    width: min(860px, 100%);
+    background: linear-gradient(180deg, rgba(19, 29, 52, 0.95), rgba(14, 21, 41, 0.95));
+    border: 1px solid #213259;
+    border-radius: 0.9rem;
+    padding: 1.6rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    gap: 1.25rem;
+    box-shadow: 0 20px 55px rgba(0, 0, 0, 0.45);
 }
 
 .resume-template-header {
     display: flex;
     justify-content: space-between;
     gap: 1rem;
+    align-items: flex-start;
 
-    h1 {
-        margin: 0 0 0.4rem;
-        font-size: 1.8rem;
-    }
+    &__copy {
+        h1 {
+            margin: 0 0 0.2rem;
+            font-size: 2rem;
+            letter-spacing: -0.01em;
+            color: #deebff;
+            cursor: pointer;
+        }
 
-    p {
-        margin: 0;
-        color: $text-muted;
+        p {
+            margin: 0;
+            color: #7f96c7;
+            font-size: 0.9rem;
+        }
     }
 }
 
@@ -52,13 +59,15 @@ $font-stack: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, s
     gap: 0.5rem;
 
     button {
-        border: 1px solid $border-color;
-        background-color: $bg-panel;
-        color: $text-primary;
-        padding: 0.45rem 0.75rem;
-        border-radius: 0.6rem;
+        border: 1px solid #2a3f6d;
+        background-color: #16274a;
+        color: #8ea9d7;
+        padding: 0.42rem 0.82rem;
+        border-radius: 0.5rem;
         cursor: pointer;
         transition: border-color 0.2s, color 0.2s;
+        font-size: 0.78rem;
+        font-weight: 600;
 
         &:hover {
             border-color: $accent;
@@ -70,72 +79,192 @@ $font-stack: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, s
 .resume-template-body {
     display: flex;
     flex-direction: column;
-    gap: 0.9rem;
-
-    select {
-        background-color: $bg-input;
-        border: 1px solid $border-color;
-        border-radius: 0.6rem;
-        padding: 0.6rem 0.75rem;
-        color: $text-primary;
-        font-family: $font-stack;
-    }
+    gap: 0.95rem;
 }
 
 .resume-template-label {
-    font-size: 0.85rem;
-    color: $text-muted;
+    font-size: 0.72rem;
+    color: #5f78ab;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+}
+
+.resume-template-select-wrap {
+    position: relative;
+
+    &::after {
+        content: '▾';
+        position: absolute;
+        right: 0.8rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #7693c6;
+        pointer-events: none;
+        font-size: 0.8rem;
+    }
+
+    select {
+        width: 100%;
+        appearance: none;
+        background-color: #0b162f;
+        border: 1px solid #2a3f6d;
+        border-radius: 0.58rem;
+        padding: 0.72rem 2rem 0.72rem 0.78rem;
+        color: #d5e5ff;
+        font-family: $font-stack;
+        font-size: 0.86rem;
+
+        &:focus {
+            outline: none;
+            border-color: $accent;
+        }
+    }
 }
 
 .resume-template-options {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 0.6rem;
 }
 
-.template-chip {
-    border: 1px solid $border-color;
-    background-color: $bg-panel;
-    color: $text-primary;
-    border-radius: 999px;
-    padding: 0.4rem 0.8rem;
+.template-tile {
+    width: 18.7%;
+    min-width: 112px;
+    aspect-ratio: 1;
+    border: 1px solid #273c66;
+    background: #141f3a;
+    color: #c6d7f8;
+    border-radius: 0.6rem;
+    padding: 0.45rem;
     cursor: pointer;
     font-size: 0.85rem;
-    transition: border-color 0.2s, color 0.2s, background-color 0.2s;
-
-    &--active {
-        border-color: $accent;
-        color: $accent;
-        background-color: rgba($accent, 0.12);
-    }
-}
-
-.template-upload {
+    transition: border-color 0.2s, transform 0.15s;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    justify-content: space-between;
 
-    input {
-        color: $text-primary;
+    &__preview {
+        height: 70%;
+        border-radius: 0.45rem;
+        display: grid;
+        align-content: center;
+        gap: 0.22rem;
+        padding: 0.65rem;
+
+        span {
+            display: block;
+            height: 2px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.45);
+
+            &:nth-child(1) { width: 48%; }
+            &:nth-child(2) { width: 68%; }
+            &:nth-child(3) { width: 38%; }
+        }
+    }
+
+    &__name {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        text-align: center;
+    }
+
+    &:hover {
+        transform: translateY(-1px);
+    }
+
+    &--active {
+        border-color: #ff2d78;
+        box-shadow: 0 0 0 1px rgba(255, 45, 120, 0.2) inset;
+    }
+
+    &--default {
+        .template-tile__preview {
+            background: linear-gradient(180deg, #1f2d53, #182240);
+
+            span {
+                background: #3d7ce6;
+                &:nth-child(1) { background: #ff2d78; }
+            }
+        }
+        .template-tile__name {
+            color: #ff4a8a;
+        }
+    }
+
+    &--classic {
+        .template-tile__preview {
+            background: #f3f0ea;
+
+            span {
+                background: #9d8f75;
+            }
+        }
+        .template-tile__name {
+            color: #e8dcc4;
+        }
+    }
+
+    &--modern {
+        .template-tile__preview {
+            background: linear-gradient(180deg, #23194d, #151f4a);
+
+            span {
+                background: #8f72ff;
+            }
+        }
+        .template-tile__name {
+            color: #8d75ff;
+        }
+    }
+
+    &--compact {
+        .template-tile__preview {
+            background: #062819;
+
+            span {
+                background: #24da94;
+            }
+        }
+        .template-tile__name {
+            color: #24da94;
+        }
+    }
+
+    &--ats {
+        .template-tile__preview {
+            background: #291515;
+
+            span {
+                background: #f2b14c;
+            }
+        }
+        .template-tile__name {
+            color: #f2b14c;
+        }
     }
 }
 
 .resume-template-error {
-    color: $accent;
-    font-size: 0.85rem;
+    color: #ff6b99;
+    font-size: 0.82rem;
     margin: 0;
 }
 
 .resume-template-generate {
-    align-self: flex-start;
+    width: 100%;
     border: none;
-    border-radius: 0.6rem;
-    padding: 0.65rem 1.4rem;
-    background: linear-gradient(135deg, $accent 0%, darken($accent, 10%) 100%);
+    border-radius: 0.72rem;
+    padding: 0.82rem 1.2rem;
+    background: linear-gradient(180deg, #ff3c8c 0%, #e32870 100%);
     color: #fff;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 1.02rem;
     transition: opacity 0.2s, transform 0.1s;
+    margin-top: 0.55rem;
 
     &:hover {
         opacity: 0.9;
@@ -152,6 +281,10 @@ $font-stack: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, s
 }
 
 @media (max-width: 720px) {
+    .resume-template-page {
+        padding: 1rem;
+    }
+
     .resume-template-header {
         flex-direction: column;
         align-items: flex-start;
@@ -159,5 +292,13 @@ $font-stack: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, s
 
     .resume-template-actions {
         width: 100%;
+    }
+
+    .resume-template-options {
+        flex-wrap: wrap;
+    }
+
+    .template-tile {
+        width: calc(50% - 0.3rem);
     }
 }

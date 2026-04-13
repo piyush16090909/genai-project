@@ -4,13 +4,13 @@
     outline: none;
     padding-inline: 1.5rem;
     padding-block: 0.75rem;
-    border-radius: 1rem;
+    border-radius: 0.75rem;
     cursor: pointer;
 
     transition: all 0.3s ease-in-out;
 
     &.primary-button{
-        background-color: #e1034d;
+        background: linear-gradient(135deg, #ff2d78 0%, #d81f60 100%);
         color: white;
     }
 

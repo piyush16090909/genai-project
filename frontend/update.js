@@ -1,4 +1,6 @@
-import React, { useState } from 'react'
+const fs = require('fs');
+
+const content = `import React, { useState } from 'react'
 import "../style/home.scss"
 import { useInterview } from '../hooks/useInterview.js'
 import { useAuth } from '../../auth/hooks/useAuth.js'
@@ -25,11 +27,7 @@ const Home = () => {
         }
         setFormError("")
         const data = await generateReport({ jobDescription, selfDescription, resumeFile })
-        if (!data?._id) {
-            setFormError("Interview plan could not be created. Please check backend database connection and try again.")
-            return
-        }
-        navigate('/interview/' + data._id)
+        navigate(\`/interview/\${data._id}\`)
     }
 
     const handleLogoutClick = async () => {
@@ -85,7 +83,7 @@ const Home = () => {
         <div className='home-page'>
             {/* Top Bar */}
             <div className='top-bar'>
-                <div className='brand' onClick={() => { setIsCreating(false); navigate('/') }}>
+                <div className='brand'>
                     <span>Prep</span>
                     <span className='brand-highlight'>AI</span>
                 </div>
@@ -136,14 +134,14 @@ const Home = () => {
                                 <p className='report-item__meta'>Generated on {new Date(report.createdAt).toLocaleDateString()}</p>
                                 <div className='report-badges'>
                                     <span className={"report-badge report-badge--score " + (report.matchScore >= 80 ? 'score--high' : report.matchScore >= 60 ? 'score--mid' : 'score--low')}>
-                                        {report.matchScore ? report.matchScore + "% Match" : 'Match Score'}
+                                        {report.matchScore ? \`\${report.matchScore}% Match\` : 'Match Score'}
                                     </span>
                                     <span className='report-badge report-badge--purple'>{report.skillGaps?.length || 0} skill gaps</span>
                                 </div>
                                 <button
                                     type='button'
                                     className='report-item__cta'
-                                    onClick={() => navigate('/interview/' + report._id)}
+                                    onClick={() => navigate(\`/interview/\${report._id}\`)}
                                 >
                                     View Report &rarr;
                                 </button>
@@ -223,7 +221,7 @@ const Home = () => {
                                     <input hidden type='file' id='resume' name='resume' accept='.pdf' onChange={handleResumeChange} />
                                 </label>
                                 <p className='dropzone__meta'>
-                                    {resumeFile ? "Selected: " + resumeFile.name : ""}
+                                    {resumeFile ? \`Selected: \${resumeFile.name}\` : ""}
                                 </p>
                                 {resumeError && <p className='dropzone__error'>{resumeError}</p>}
                             </div>
@@ -269,4 +267,6 @@ const Home = () => {
     )
 }
 
-export default Home
+export default Home`;
+
+fs.writeFileSync('d:/genaiproject/frontend/src/features/interview/pages/Home.jsx', content);

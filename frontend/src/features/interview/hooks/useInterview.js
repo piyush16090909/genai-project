@@ -17,17 +17,18 @@ export const useInterview = () => {
 
     const generateReport = async ({ jobDescription, selfDescription, resumeFile, roadmapDays }) => {
         setLoading(true)
-        let response = null
         try {
-            response = await generateInterviewReport({ jobDescription, selfDescription, resumeFile, roadmapDays })
+            const response = await generateInterviewReport({ jobDescription, selfDescription, resumeFile, roadmapDays })
             setReport(response.interviewReport)
+            return response.interviewReport
         } catch (error) {
             console.log(error)
+            const errorMessage = error?.response?.data?.message || "Failed to create interview plan."
+            window.alert(errorMessage)
+            return null
         } finally {
             setLoading(false)
         }
-
-        return response.interviewReport
     }
 
     const getReportById = async (interviewId) => {
