@@ -31,7 +31,7 @@ const ResumeTemplate = () => {
                 } else if (list.length > 0) {
                     setSelectedReportId(list[0]._id)
                 }
-            } catch (err) {
+            } catch {
                 setError("Unable to load interview reports.")
             }
         }
@@ -67,7 +67,7 @@ const ResumeTemplate = () => {
             link.click()
             document.body.removeChild(link)
             window.URL.revokeObjectURL(url)
-        } catch (err) {
+        } catch {
             setError("Unable to generate resume right now.")
         } finally {
             setLoading(false)

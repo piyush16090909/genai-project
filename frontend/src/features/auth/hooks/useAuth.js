@@ -56,14 +56,16 @@ export const useAuth = () => {
 
                 const data = await getMe()
                 setUser(data.user)
-            } catch (err) { } finally {
+            } catch {
+                setUser(null)
+            } finally {
                 setLoading(false)
             }
         }
 
         getAndSetUser()
 
-    }, [])
+    }, [ setLoading, setUser ])
 
     return { user, loading, handleRegister, handleLogin, handleLogout }
 }

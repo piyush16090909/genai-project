@@ -82,4 +82,14 @@ async function chatWithAi({ message, history, context }) {
     })
 }
 
-module.exports = { generateInterviewReport, generateResumePdf, chatWithAi }
+async function practiceInterview({ message, history, question, resume, resume_data }) {
+    return postToAiService("/interview", {
+        message,
+        history,
+        question,
+        resume,
+        resume_data
+    })
+}
+
+module.exports = { generateInterviewReport, generateResumePdf, chatWithAi, practiceInterview }

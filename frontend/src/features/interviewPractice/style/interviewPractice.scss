@@ -1,0 +1,148 @@
+.practice-page {
+    min-height: 100vh;
+    padding: 24px;
+    background: radial-gradient(circle at top left, #1d1446 0%, #081734 35%, #041024 100%);
+    color: #e8efff;
+}
+
+.practice-card {
+    max-width: 980px;
+    margin: 0 auto;
+    background: rgba(9, 19, 43, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    padding: 20px;
+    display: grid;
+    gap: 14px;
+}
+
+.practice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.practice-header h1 {
+    margin: 0;
+    font-size: 1.7rem;
+}
+
+.practice-header p {
+    margin: 4px 0 0;
+    color: #9cb0dd;
+}
+
+.practice-header__actions {
+    display: flex;
+    gap: 10px;
+}
+
+.practice-header__actions button,
+.practice-empty button,
+.practice-input button {
+    border: 0;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-weight: 700;
+    cursor: pointer;
+    background: linear-gradient(90deg, #ff2a7d 0%, #d61f7d 100%);
+    color: #fff;
+}
+
+.practice-empty {
+    display: grid;
+    gap: 10px;
+    justify-items: start;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px dashed rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    padding: 18px;
+}
+
+.practice-messages {
+    max-height: 52vh;
+    overflow: auto;
+    padding-right: 6px;
+    display: grid;
+    gap: 10px;
+}
+
+.practice-msg {
+    border-radius: 12px;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.practice-msg--user {
+    background: rgba(29, 80, 181, 0.35);
+}
+
+.practice-msg__role {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #b7c8ef;
+    margin-bottom: 6px;
+}
+
+.practice-msg p {
+    margin: 0;
+    white-space: pre-wrap;
+    line-height: 1.45;
+}
+
+.practice-eval {
+    background: rgba(102, 214, 166, 0.09);
+    border: 1px solid rgba(102, 214, 166, 0.35);
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.practice-eval h2 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+}
+
+.practice-eval pre {
+    margin: 0;
+    white-space: pre-wrap;
+    font-family: inherit;
+}
+
+.practice-error {
+    margin: 0;
+    color: #ff92a7;
+    font-weight: 700;
+}
+
+.practice-input {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+}
+
+.practice-input textarea {
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(11, 19, 44, 0.95);
+    color: #e8efff;
+    padding: 10px;
+    resize: vertical;
+}
+
+@media (max-width: 760px) {
+    .practice-page {
+        padding: 12px;
+    }
+
+    .practice-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .practice-input {
+        grid-template-columns: 1fr;
+    }
+}

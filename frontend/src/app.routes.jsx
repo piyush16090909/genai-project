@@ -6,6 +6,7 @@ import Home from "./features/interview/pages/Home";
 import Interview from "./features/interview/pages/Interview";
 import Chat from "./features/chat/pages/Chat";
 import ResumeTemplate from "./features/resumeTemplate/pages/ResumeTemplate";
+import InterviewPractice from "./features/interviewPractice/pages/InterviewPractice";
 
 
 export const router = createBrowserRouter([
@@ -32,6 +33,14 @@ export const router = createBrowserRouter([
     {
         path: "/chat",
         element: <Protected><Chat /></Protected>
+    },
+    {
+        path: "/interview-practice/:interviewId",
+        element: <Protected><InterviewPractice /></Protected>
+    },
+    {
+        path: "/interview-practice",
+        element: <Protected><InterviewPractice /></Protected>
     },
     {
         path: "/resume-template",

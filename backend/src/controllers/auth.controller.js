@@ -26,15 +26,17 @@ async function registerUserController(req, res) {
 
     try {
         const { username, email, password } = req.body
+        const normalizedUsername = String(username || "").trim()
+        const normalizedEmail = String(email || "").trim().toLowerCase()
 
-        if (!username || !email || !password) {
+        if (!normalizedUsername || !normalizedEmail || !password) {
             return res.status(400).json({
                 message: "Please provide username, email and password"
             })
         }
 
         const isUserAlreadyExists = await userModel.findOne({
-            $or: [ { username }, { email } ]
+            $or: [ { username: normalizedUsername }, { email: normalizedEmail } ]
         })
 
         if (isUserAlreadyExists) {
@@ -46,8 +48,8 @@ async function registerUserController(req, res) {
         const hash = await bcrypt.hash(password, 10)
 
         const user = await userModel.create({
-            username,
-            email,
+            username: normalizedUsername,
+            email: normalizedEmail,
             password: hash
         })
 
@@ -89,9 +91,22 @@ async function loginUserController(req, res) {
     }
 
     try {
-        const { email, password } = req.body
+        const { email, username, identifier, password } = req.body
+        const rawIdentifier = identifier || email || username
+        const normalizedIdentifier = String(rawIdentifier || "").trim()
 
-        const user = await userModel.findOne({ email })
+        if (!normalizedIdentifier || !password) {
+            return res.status(400).json({
+                message: "Please provide email or username and password"
+            })
+        }
+
+        const user = await userModel.findOne({
+            $or: [
+                { email: normalizedIdentifier.toLowerCase() },
+                { username: normalizedIdentifier }
+            ]
+        })
 
         if (!user) {
             return res.status(400).json({

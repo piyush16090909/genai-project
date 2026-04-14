@@ -8,14 +8,14 @@ const Login = () => {
     const { loading, handleLogin } = useAuth()
     const navigate = useNavigate()
 
-    const [ email, setEmail ] = useState("")
+    const [ identifier, setIdentifier ] = useState("")
     const [ password, setPassword ] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         setErrorMessage("")
-        const result = await handleLogin({email,password})
+        const result = await handleLogin({ email: identifier, password, identifier })
         if (!result?.ok) {
             setErrorMessage(result?.message || "Login failed")
             return
@@ -64,11 +64,11 @@ const Login = () => {
 
                         <form onSubmit={handleSubmit}>
                             <div className="input-group">
-                                <label htmlFor="email">Email Address</label>
+                                <label htmlFor="email">Email or Username</label>
                                 <input
-                                    value={email}
-                                    onChange={(e) => { setEmail(e.target.value) }}
-                                    type="email" id="email" name='email' placeholder='you@example.com' />
+                                    value={identifier}
+                                    onChange={(e) => { setIdentifier(e.target.value) }}
+                                    type="text" id="email" name='email' placeholder='you@example.com or your username' />
                             </div>
                             <div className="input-group">
                                 <label htmlFor="password">Password</label>

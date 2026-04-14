@@ -4,15 +4,32 @@ from typing import List, Literal, Optional
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
-from langchain_mistralai import ChatMistralAI
 
 
-ENV_PATH = os.path.join(os.path.dirname(__file__), "..", ".env")
-load_dotenv(ENV_PATH)
+BASE_DIR = os.path.dirname(__file__)
+ENV_CANDIDATES = [
+    os.path.join(BASE_DIR, ".env"),
+    os.path.join(BASE_DIR, "..", ".env"),
+    os.path.join(BASE_DIR, "..", "backend", ".env"),
+]
+
+for env_path in ENV_CANDIDATES:
+    if os.path.exists(env_path):
+        load_dotenv(env_path, override=False)
+
+from agents.interview_agent import generate_question, evaluate_answer
+from utils.resume_praser import extract_resume_data
 
 app = FastAPI(title="AI Service", version="1.0.0")
 
+
+
+class InterviewRequest(BaseModel):
+    message: str
+    history: list = []
+    question: str = ""
+    resume: str = ""
+    resume_data: dict = {}  
 
 class InterviewReportRequest(BaseModel):
     resume: str
@@ -107,7 +124,14 @@ class ChatResponse(BaseModel):
     reply: str
 
 
-def get_llm() -> ChatMistralAI:
+def get_llm():
+    try:
+        from langchain_mistralai import ChatMistralAI
+    except ImportError as exc:
+        raise RuntimeError(
+            "langchain-mistralai is not installed. Run: pip install langchain langchain-mistralai"
+        ) from exc
+
     api_key = os.getenv("MISTRAL_API_KEY")
     if not api_key:
         raise RuntimeError("MISTRAL_API_KEY is not set")
@@ -192,10 +216,54 @@ def resume_html(payload: ResumeHtmlRequest) -> ResumeHtmlResponse:
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
 
+@app.get("/")
+def home():
+    return {"message": "AI Interview Service Running"}
+
+@app.post("/interview")
+def interview(req: InterviewRequest):
+    try:
+        history = req.history if isinstance(req.history, list) else []
+        user_input = req.message
+        last_question = req.question
+
+        # Step 1: Parse resume only first time.
+        resume_data = req.resume_data if isinstance(req.resume_data, dict) else {}
+        if not resume_data and req.resume:
+            resume_data = extract_resume_data(req.resume)
+
+        # Step 2: Evaluate current answer against the previous question.
+        evaluation = None
+        if last_question:
+            evaluation = evaluate_answer(last_question, user_input)
+
+        # Step 3: Update history.
+        history.append({"role": "user", "content": user_input})
+
+        # Step 4: Generate the next interview question.
+        next_question = generate_question(history, resume_data)
+        history.append({"role": "assistant", "content": next_question})
+
+        return {
+            "question": next_question,
+            "evaluation": evaluation,
+            "history": history,
+            "resume_data": resume_data
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
 
 @app.post("/chat", response_model=ChatResponse)
 def chat(payload: ChatRequest) -> ChatResponse:
     try:
+        try:
+            from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+        except ImportError as exc:
+            raise HTTPException(
+                status_code=500,
+                detail="langchain-core is not installed. Run: pip install langchain langchain-mistralai"
+            ) from exc
+
         llm = get_llm()
         messages = []
 

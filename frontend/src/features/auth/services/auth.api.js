@@ -1,8 +1,11 @@
 import axios from "axios"
 
+const apiHost = typeof window !== "undefined" ? window.location.hostname : "localhost"
+const apiPort = import.meta.env.VITE_API_PORT || "3000"
+const apiProtocol = import.meta.env.VITE_API_PROTOCOL || "http"
 
 const api = axios.create({
-    baseURL: "http://localhost:3000",
+    baseURL: `${apiProtocol}://${apiHost}:${apiPort}`,
     withCredentials: true
 })
 
@@ -15,9 +18,11 @@ export async function register({ username, email, password }) {
 
 }
 
-export async function login({ email, password }) {
+export async function login({ email, password, identifier }) {
     const response = await api.post("/api/auth/login", {
-        email, password
+        email,
+        identifier: identifier || email,
+        password
     })
 
     return response.data

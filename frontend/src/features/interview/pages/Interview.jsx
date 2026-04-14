@@ -92,7 +92,7 @@ const Interview = () => {
         if (interviewId) {
             getReportById(interviewId)
         }
-    }, [ interviewId ])
+    }, [ interviewId, getReportById ])
 
     const handleRegenerateRoadmap = async () => {
         const normalized = Number(roadmapDays)
@@ -152,6 +152,7 @@ const Interview = () => {
                         <div className='nav-actions'>
                             <button className='nav-action-button' onClick={() => navigate(-1)}>&larr; Back</button>
                             <button className='nav-action-button' onClick={() => navigate('/')}>Home</button>
+                            <button className='nav-action-button' onClick={() => navigate(`/interview-practice/${interviewId}`)}>Interview Practice</button>
                             <button className='nav-action-button' onClick={() => navigate(`/resume-template/${interviewId}`)}>Resume Templates</button>
                             <button onClick={() => { getResumePdf(interviewId) }} className='nav-action-button nav-action-button--download'>Download Resume</button>
                         </div>
