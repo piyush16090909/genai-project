@@ -4,6 +4,43 @@ const jwt = require("jsonwebtoken")
 const tokenBlacklistModel = require("../models/blacklist.model")
 const mongoose = require("mongoose")
 
+function getAuthCookieOptions() {
+    const configuredSecure = process.env.COOKIE_SECURE
+    const secure = configuredSecure
+        ? configuredSecure === "true"
+        : process.env.NODE_ENV === "production"
+    const sameSite = (process.env.COOKIE_SAME_SITE || (secure ? "none" : "lax")).toLowerCase()
+    const cookieDomain = process.env.COOKIE_DOMAIN?.trim()
+    const cookieOptions = {
+        httpOnly: true,
+        secure: sameSite === "none" ? true : secure,
+        sameSite,
+        maxAge: 24 * 60 * 60 * 1000
+    }
+
+    if (cookieDomain) {
+        cookieOptions.domain = cookieDomain
+    }
+
+    return cookieOptions
+}
+
+function getAuthCookieClearOptions(cookieOptions) {
+    const clearOptions = {
+        httpOnly: cookieOptions.httpOnly,
+        secure: cookieOptions.secure,
+        sameSite: cookieOptions.sameSite
+    }
+
+    if (cookieOptions.domain) {
+        clearOptions.domain = cookieOptions.domain
+    }
+
+    return clearOptions
+}
+
+const authCookieOptions = getAuthCookieOptions()
+
 function ensureDatabaseConnected(res) {
     if (mongoose.connection.readyState !== 1) {
         res.status(503).json({
@@ -59,7 +96,7 @@ async function registerUserController(req, res) {
             { expiresIn: "1d" }
         )
 
-        res.cookie("token", token)
+        res.cookie("token", token, authCookieOptions)
 
 
         res.status(201).json({
@@ -128,7 +165,7 @@ async function loginUserController(req, res) {
             { expiresIn: "1d" }
         )
 
-        res.cookie("token", token)
+        res.cookie("token", token, authCookieOptions)
         res.status(200).json({
             message: "User loggedIn successfully.",
             user: {
@@ -158,7 +195,7 @@ async function logoutUserController(req, res) {
         await tokenBlacklistModel.create({ token })
     }
 
-    res.clearCookie("token")
+    res.clearCookie("token", getAuthCookieClearOptions(authCookieOptions))
 
     res.status(200).json({
         message: "User logged out successfully"
