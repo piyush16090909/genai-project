@@ -1,5 +1,10 @@
 @use "./style/button.scss";
 
+:root {
+    --app-desktop-scale: 0.75;
+    --app-tablet-scale: 0.86;
+}
+
 :root[data-theme="dark"] {
     --theme-bg: #000000;
     --theme-surface: #111111;
@@ -40,6 +45,22 @@ body,
     background-color: var(--theme-bg);
     color: var(--theme-text);
     font-family: "Space Grotesk", "Instrument Sans", sans-serif;
+}
+
+html {
+    font-size: calc(16px * var(--app-desktop-scale));
+}
+
+@media (max-width: 1200px) {
+    html {
+        font-size: calc(16px * var(--app-tablet-scale));
+    }
+}
+
+@media (max-width: 768px) {
+    html {
+        font-size: 100%;
+    }
 }
 
 .highlight {
