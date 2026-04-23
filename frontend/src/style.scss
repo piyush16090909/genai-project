@@ -1,5 +1,31 @@
 @use "./style/button.scss";
 
+:root[data-theme="dark"] {
+    --theme-bg: #000000;
+    --theme-surface: #111111;
+    --theme-surface-2: #1a1a1a;
+    --theme-border: #2b2b2b;
+    --theme-text: #ffffff;
+    --theme-muted: #b5b5b5;
+    --theme-shadow: rgba(0, 0, 0, 0.35);
+    --theme-input-bg: #0d0d0d;
+    --theme-accent: #ff2d78;
+    --theme-accent-2: #d81c5a;
+}
+
+:root[data-theme="light"] {
+    --theme-bg: #fff8fb;
+    --theme-surface: #ffffff;
+    --theme-surface-2: #fff1f6;
+    --theme-border: #efcfde;
+    --theme-text: #24131d;
+    --theme-muted: #6f5a67;
+    --theme-shadow: rgba(133, 37, 76, 0.12);
+    --theme-input-bg: #fffdfd;
+    --theme-accent: #ff2d78;
+    --theme-accent-2: #ff7a59;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -11,11 +37,203 @@ body,
 #root {
     width: 100%;
     min-height: 100vh;
-    background-color: #0d1117;
-    color: #e6edf3;
+    background-color: var(--theme-bg);
+    color: var(--theme-text);
     font-family: "Space Grotesk", "Instrument Sans", sans-serif;
 }
 
 .highlight {
-    color: #ff2d78;
+    color: var(--theme-accent);
+}
+
+/* Global fixed theme switch button */
+.theme-fab {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 9999;
+    border: 1px solid var(--theme-border);
+    background-color: var(--theme-surface);
+    color: var(--theme-text);
+    border-radius: 999px;
+    padding: 0.58rem 0.95rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 24px var(--theme-shadow);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+
+    &:hover {
+        transform: translateY(-1px);
+        opacity: 0.92;
+    }
+}
+
+/* Theme application for major page wrappers */
+:root[data-theme="dark"],
+:root[data-theme="light"] {
+    .home-page,
+    .interview-page,
+    .chat-page,
+    .practice-page,
+    .resume-template-page,
+    .auth-login-page,
+    .auth-form-page {
+        background: var(--theme-bg) !important;
+        color: var(--theme-text) !important;
+    }
+
+    .form-container,
+    .chat-card,
+    .practice-card,
+    .resume-template-card,
+    .interview-layout,
+    .panel,
+    .report-item {
+        background: var(--theme-surface) !important;
+        color: var(--theme-text) !important;
+        border-color: var(--theme-border) !important;
+        box-shadow: 0 8px 24px var(--theme-shadow) !important;
+    }
+
+    .chat-page .chat-card {
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    .input-group input,
+    .chat-input textarea,
+    .practice-input textarea,
+    .panel__textarea,
+    .panel__textarea--short,
+    .resume-template-select-wrap select,
+    .search-wrapper input,
+    .chat-input input,
+    textarea,
+    input,
+    select {
+        background: var(--theme-input-bg) !important;
+        color: var(--theme-text) !important;
+        border-color: var(--theme-border) !important;
+    }
+
+    .home-page .top-bar,
+    .recent-reports__controls,
+    .interview-topbar,
+    .chat-header,
+    .chat-context-row,
+    .chat-input,
+    .resume-template-header,
+    .practice-header,
+    .interview-nav,
+    .interview-sidebar {
+        background: var(--theme-surface-2) !important;
+        border-color: var(--theme-border) !important;
+    }
+
+    .home-page h1,
+    .home-page h2,
+    .home-page h3,
+    .interview-page h1,
+    .interview-page h2,
+    .interview-page h3,
+    .chat-page h1,
+    .chat-page h2,
+    .practice-page h1,
+    .practice-page h2,
+    .resume-template-page h1,
+    .resume-template-page h2,
+    .resume-template-page h3,
+    .brand,
+    .interview-topbar__brand,
+    .auth-login-hero__brand,
+    .auth-login-card h3 {
+        color: var(--theme-text) !important;
+    }
+
+    .home-page p,
+    .home-page label,
+    .home-page span,
+    .interview-page p,
+    .interview-page label,
+    .interview-page span,
+    .chat-page p,
+    .chat-page label,
+    .chat-page span,
+    .practice-page p,
+    .practice-page label,
+    .practice-page span,
+    .resume-template-page p,
+    .resume-template-page label,
+    .resume-template-page span,
+    .auth-login-page p,
+    .auth-login-page label,
+    .auth-login-page span {
+        color: var(--theme-muted) !important;
+    }
+
+    .q-card,
+    .report-item,
+    .template-tile,
+    .practice-msg,
+    .chat-message__bubble {
+        background: var(--theme-surface) !important;
+        border-color: var(--theme-border) !important;
+        color: var(--theme-text) !important;
+    }
+
+    .button.primary-button,
+    .btn-new,
+    .generate-btn,
+    .resume-template-generate,
+    .practice-empty button,
+    .practice-input button,
+    .chat-input button,
+    .floating-chat,
+    .nav-action-button--download {
+        background: linear-gradient(135deg, var(--theme-accent), var(--theme-accent-2)) !important;
+        color: #ffffff !important;
+        border-color: transparent !important;
+    }
+
+    .logout-button,
+    .chat-action,
+    .nav-action-button,
+    .resume-template-actions button,
+    .btn-sort,
+    .chat-quick-prompts__chip,
+    .template-tile {
+        background: var(--theme-surface-2) !important;
+        color: var(--theme-text) !important;
+        border-color: var(--theme-border) !important;
+    }
+
+    .report-item__menu svg,
+    .panel__icon svg,
+    .chat-header svg,
+    .practice-header svg {
+        stroke: var(--theme-muted) !important;
+    }
+
+    .dropzone,
+    .or-divider span,
+    .info-box,
+    .panel__tip,
+    .chat-quick-prompts,
+    .chat-messages,
+    .practice-empty,
+    .practice-eval {
+        background: var(--theme-surface) !important;
+        border-color: var(--theme-border) !important;
+        color: var(--theme-text) !important;
+    }
+
+    .dropzone__error,
+    .form-error,
+    .chat-error,
+    .practice-error,
+    .resume-template-error {
+        color: #d62828 !important;
+    }
 }

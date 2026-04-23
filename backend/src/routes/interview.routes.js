@@ -57,6 +57,13 @@ interviewRouter.post(
 interviewRouter.post("/roadmap/:interviewId", authMiddleware.authUser, interviewController.regenerateRoadmapController)
 
 /**
+ * @route PUT /api/interview/:interviewId
+ * @description update interview report by interviewId.
+ * @access private
+ */
+interviewRouter.put("/:interviewId", authMiddleware.authUser, upload.single("resume"), interviewController.updateInterviewReportController)
+
+/**
  * @route DELETE /api/interview/:interviewId
  * @description delete interview report by interviewId.
  * @access private

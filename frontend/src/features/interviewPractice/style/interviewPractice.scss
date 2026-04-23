@@ -1,19 +1,25 @@
 .practice-page {
+    width: 100vw;
+    max-width: 100vw;
     min-height: 100vh;
-    padding: 24px;
-    background: radial-gradient(circle at top left, #1d1446 0%, #081734 35%, #041024 100%);
-    color: #e8efff;
+    padding: 0;
+    background: var(--theme-bg);
+    color: var(--theme-text);
+    overflow-x: hidden;
 }
 
 .practice-card {
-    max-width: 980px;
-    margin: 0 auto;
-    background: rgba(9, 19, 43, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 18px;
-    padding: 20px;
-    display: grid;
-    gap: 14px;
+    width: 100vw;
+    max-width: 100vw;
+    min-height: 100vh;
+    margin: 0;
+    background: var(--theme-bg);
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
 }
 
 .practice-header {
@@ -21,21 +27,39 @@
     justify-content: space-between;
     align-items: center;
     gap: 16px;
+    background: var(--theme-bg);
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid var(--theme-border);
+}
+
+.practice-header__text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .practice-header h1 {
     margin: 0;
-    font-size: 1.7rem;
+    font-size: 1.4rem;
+    color: var(--theme-text);
+    cursor: pointer;
 }
 
 .practice-header p {
-    margin: 4px 0 0;
-    color: #9cb0dd;
+    margin: 0;
+    color: var(--theme-muted);
+    font-size: 0.82rem;
+}
+
+.practice-header__dot {
+    color: #19e077;
+    font-size: 0.85rem;
 }
 
 .practice-header__actions {
     display: flex;
     gap: 10px;
+    margin-left: auto;
 }
 
 .practice-header__actions button,
@@ -46,44 +70,89 @@
     padding: 10px 14px;
     font-weight: 700;
     cursor: pointer;
-    background: linear-gradient(90deg, #ff2a7d 0%, #d61f7d 100%);
+    background: linear-gradient(90deg, var(--theme-accent) 0%, var(--theme-accent-2) 100%);
     color: #fff;
+}
+
+.practice-header__actions button {
+    border: 1px solid var(--theme-border);
+    border-radius: 0.45rem;
+    padding: 0.4rem 0.82rem;
+    background: var(--theme-surface-2);
+    color: var(--theme-text);
+    font-size: 0.74rem;
+    font-weight: 600;
+    transition: border-color 0.2s, color 0.2s, background-color 0.2s;
+
+    &:hover {
+        border-color: var(--theme-accent);
+        color: var(--theme-accent);
+        background: var(--theme-surface);
+    }
+}
+
+.practice-context-row {
+    display: flex;
+    gap: 0.45rem;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--theme-border);
+    background: var(--theme-bg);
+}
+
+.practice-context-label {
+    font-size: 0.72rem;
+    color: var(--theme-muted);
+}
+
+.practice-context-chip {
+    font-size: 0.68rem;
+    color: var(--theme-muted);
+    background: var(--theme-surface);
+    border: 1px solid var(--theme-border);
+    padding: 0.18rem 0.45rem;
+    border-radius: 999px;
 }
 
 .practice-empty {
     display: grid;
     gap: 10px;
     justify-items: start;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px dashed rgba(255, 255, 255, 0.25);
+    background: var(--theme-surface-2);
+    border: 1px dashed var(--theme-border);
     border-radius: 12px;
     padding: 18px;
+    align-self: start;
+    margin: 16px 20px 0;
 }
 
 .practice-messages {
-    max-height: 52vh;
+    min-height: 0;
+    flex: 1;
     overflow: auto;
-    padding-right: 6px;
+    padding: 16px 20px;
     display: grid;
     gap: 10px;
+    align-content: start;
 }
 
 .practice-msg {
     border-radius: 12px;
     padding: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--theme-border);
+    background: var(--theme-surface-2);
 }
 
 .practice-msg--user {
-    background: rgba(29, 80, 181, 0.35);
+    background: var(--theme-surface);
 }
 
 .practice-msg__role {
     display: inline-block;
     font-size: 0.78rem;
     font-weight: 700;
-    color: #b7c8ef;
+    color: var(--theme-muted);
     margin-bottom: 6px;
 }
 
@@ -94,10 +163,12 @@
 }
 
 .practice-eval {
-    background: rgba(102, 214, 166, 0.09);
-    border: 1px solid rgba(102, 214, 166, 0.35);
+    background: var(--theme-surface-2);
+    border: 1px solid var(--theme-border);
     border-radius: 12px;
     padding: 12px;
+    max-width: 100%;
+    margin: 16px 20px 0;
 }
 
 .practice-eval h2 {
@@ -112,8 +183,8 @@
 }
 
 .practice-error {
-    margin: 0;
-    color: #ff92a7;
+    margin: 12px 20px 0;
+    color: #d62828;
     font-weight: 700;
 }
 
@@ -121,25 +192,52 @@
     display: grid;
     grid-template-columns: 1fr auto;
     gap: 10px;
+    align-items: end;
+    padding: 12px 20px 16px;
+    border-top: 1px solid var(--theme-border);
 }
 
 .practice-input textarea {
+    min-height: 92px;
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background: rgba(11, 19, 44, 0.95);
-    color: #e8efff;
+    border: 1px solid var(--theme-border);
+    background: var(--theme-input-bg);
+    color: var(--theme-text);
     padding: 10px;
     resize: vertical;
 }
 
 @media (max-width: 760px) {
     .practice-page {
-        padding: 12px;
+        padding: 0;
+    }
+
+    .practice-card {
+        min-height: 100vh;
+        padding: 0;
     }
 
     .practice-header {
-        flex-direction: column;
         align-items: flex-start;
+        padding: 12px;
+    }
+
+    .practice-context-row {
+        padding: 10px 12px;
+    }
+
+    .practice-empty,
+    .practice-messages,
+    .practice-error,
+    .practice-input {
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .practice-eval {
+        margin: 12px 12px 0;
     }
 
     .practice-input {

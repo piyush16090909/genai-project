@@ -1,4 +1,4 @@
-import { getAllInterviewReports, generateInterviewReport, getInterviewReportById, generateResumePdf, regenerateRoadmap, deleteInterviewReport } from "../services/interview.api"
+import { getAllInterviewReports, generateInterviewReport, getInterviewReportById, generateResumePdf, regenerateRoadmap, deleteInterviewReport, updateInterviewReport } from "../services/interview.api"
 import { useCallback, useContext, useEffect } from "react"
 import { InterviewContext } from "../interview.context"
 import { useParams } from "react-router"
@@ -24,6 +24,23 @@ export const useInterview = () => {
         } catch (error) {
             console.log(error)
             const errorMessage = error?.response?.data?.message || "Failed to create interview plan."
+            window.alert(errorMessage)
+            return null
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const editReport = async ({ interviewId, jobDescription, selfDescription, resumeFile }) => {
+        setLoading(true)
+        try {
+            const response = await updateInterviewReport({ interviewId, jobDescription, selfDescription, resumeFile })
+            setReport(response.interviewReport)
+            setReports((prev) => prev.map((item) => item._id === interviewId ? response.interviewReport : item))
+            return response.interviewReport
+        } catch (error) {
+            console.log(error)
+            const errorMessage = error?.response?.data?.message || "Failed to update interview plan."
             window.alert(errorMessage)
             return null
         } finally {
@@ -127,6 +144,6 @@ export const useInterview = () => {
         }
     }, [ interviewId, getReportById, getReports ])
 
-    return { loading, report, reports, generateReport, getReportById, getReports, getResumePdf, updateRoadmap, deleteReport }
+    return { loading, report, reports, generateReport, editReport, getReportById, getReports, getResumePdf, updateRoadmap, deleteReport }
 
 }

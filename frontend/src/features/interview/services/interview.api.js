@@ -28,6 +28,26 @@ export const generateInterviewReport = async ({ jobDescription, selfDescription,
 
 }
 
+/**
+ * @description Service to update an existing interview report.
+ */
+export const updateInterviewReport = async ({ interviewId, jobDescription, selfDescription, resumeFile }) => {
+    const formData = new FormData()
+    formData.append("jobDescription", jobDescription)
+    formData.append("selfDescription", selfDescription)
+    if (resumeFile) {
+        formData.append("resume", resumeFile)
+    }
+
+    const response = await api.put(`/api/interview/${interviewId}`, formData, {
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
+    })
+
+    return response.data
+}
+
 
 /**
  * @description Service to get interview report by interviewId.

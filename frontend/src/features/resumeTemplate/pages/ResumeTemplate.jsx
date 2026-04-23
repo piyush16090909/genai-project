@@ -8,13 +8,15 @@ const TEMPLATE_OPTIONS = [
     { value: "classic", label: "Classic", tone: "template-tile--classic" },
     { value: "modern", label: "Modern", tone: "template-tile--modern" },
     { value: "compact", label: "Compact", tone: "template-tile--compact" },
-    { value: "ats-friendly", label: "ATS-Friendly", tone: "template-tile--ats" }
+    { value: "ats-friendly", label: "ATS-Friendly", tone: "template-tile--ats" },
+    { value: "manual", label: "Manual Upload", tone: "template-tile--manual" }
 ]
 
 const ResumeTemplate = () => {
     const [ reports, setReports ] = useState([])
     const [ selectedReportId, setSelectedReportId ] = useState("")
     const [ templateType, setTemplateType ] = useState("default")
+    const [ templateFile, setTemplateFile ] = useState(null)
     const [ error, setError ] = useState("")
     const [ loading, setLoading ] = useState(false)
     const { interviewId } = useParams()
@@ -45,13 +47,18 @@ const ResumeTemplate = () => {
             return
         }
 
+        if (templateType === "manual" && !templateFile) {
+            setError("Please upload your template PDF for manual mode.")
+            return
+        }
+
         setError("")
         setLoading(true)
         try {
             const response = await generateResumePdfWithTemplate({
                 interviewReportId: selectedReportId,
                 templateType,
-                templateFile: null
+                templateFile
             })
 
             const contentType = response.headers?.["content-type"]
@@ -74,13 +81,32 @@ const ResumeTemplate = () => {
         }
     }
 
+    const handleTemplateUpload = (event) => {
+        const file = event.target.files?.[ 0 ]
+
+        if (!file) {
+            setTemplateFile(null)
+            return
+        }
+
+        if (file.type !== "application/pdf") {
+            setError("Please upload a PDF template file.")
+            event.target.value = ""
+            setTemplateFile(null)
+            return
+        }
+
+        setError("")
+        setTemplateFile(file)
+    }
+
     return (
         <div className="resume-template-page">
             <div className="resume-template-card">
                 <header className="resume-template-header">
                     <div className="resume-template-header__copy">
                         <h1 onClick={() => navigate("/")}>PrepAI</h1>
-                        <p>Choose a template to generate your tailored resume PDF</p>
+                        <p>Choose a resume style to generate your tailored resume PDF</p>
                     </div>
                     <div className="resume-template-actions">
                         <button type="button" onClick={() => navigate(-1)}>&larr; Back</button>
@@ -89,50 +115,77 @@ const ResumeTemplate = () => {
                 </header>
 
                 <div className="resume-template-body">
-                    <label className="resume-template-label">Select interview report</label>
-                    <div className="resume-template-select-wrap">
-                        <select
-                            value={selectedReportId}
-                            onChange={(event) => setSelectedReportId(event.target.value)}
-                        >
-                            {reports.length === 0 && <option value="">No reports found</option>}
-                            {reports.map((item) => (
-                                <option key={item._id} value={item._id}>
-                                    Interview Report for {item.username || "Candidate"} - {item.title || "SDE-1 Role"}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <label className="resume-template-label">Choose template</label>
-                    <div className="resume-template-options resume-template-options--tiles">
-                        {TEMPLATE_OPTIONS.map((option) => (
-                            <button
-                                key={option.value}
-                                type="button"
-                                className={`template-tile ${option.tone} ${templateType === option.value ? "template-tile--active" : ""}`}
-                                onClick={() => setTemplateType(option.value)}
+                    <section className="resume-template-section">
+                        <div className="resume-template-section__header">
+                            <label className="resume-template-label">Select interview report</label>
+                            <p className="resume-template-section__hint">Pick the interview plan you want to turn into a resume.</p>
+                        </div>
+                        <div className="resume-template-select-wrap">
+                            <select
+                                value={selectedReportId}
+                                onChange={(event) => setSelectedReportId(event.target.value)}
                             >
-                                <span className="template-tile__preview" aria-hidden="true">
-                                    <span />
-                                    <span />
-                                    <span />
-                                </span>
-                                <span className="template-tile__name">{option.label}</span>
-                            </button>
-                        ))}
+                                {reports.length === 0 && <option value="">No reports found</option>}
+                                {reports.map((item) => (
+                                    <option key={item._id} value={item._id}>
+                                        Interview Report for {item.username || "Candidate"} - {item.title || "SDE-1 Role"}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </section>
+
+                    <section className="resume-template-section">
+                        <div className="resume-template-section__header">
+                            <label className="resume-template-label">Choose resume style</label>
+                            <p className="resume-template-section__hint">{TEMPLATE_OPTIONS.length} resume layouts available.</p>
+                        </div>
+                        <div className="resume-template-options resume-template-options--tiles">
+                            {TEMPLATE_OPTIONS.map((option) => (
+                                <button
+                                    key={option.value}
+                                    type="button"
+                                    className={`template-tile ${option.tone} ${templateType === option.value ? "template-tile--active" : ""}`}
+                                    onClick={() => setTemplateType(option.value)}
+                                >
+                                    <span className="template-tile__preview" aria-hidden="true">
+                                        <span />
+                                        <span />
+                                        <span />
+                                    </span>
+                                    <span className="template-tile__name">{option.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </section>
+
+                    {templateType === "manual" && (
+                        <section className="resume-template-section">
+                            <div className="resume-template-manual-upload">
+                                <label htmlFor="manualTemplateUpload" className="resume-template-label">Upload your template (PDF)</label>
+                                <input
+                                    id="manualTemplateUpload"
+                                    type="file"
+                                    accept="application/pdf"
+                                    onChange={handleTemplateUpload}
+                                />
+                                {templateFile && <p className="resume-template-manual-file">Selected: {templateFile.name}</p>}
+                            </div>
+                        </section>
+                    )}
+
+                    <div className="resume-template-footer">
+                        {error && <p className="resume-template-error">{error}</p>}
+
+                        <button
+                            type="button"
+                            className="resume-template-generate"
+                            onClick={handleGenerate}
+                            disabled={loading}
+                        >
+                            {loading ? "Generating..." : "Download Resume PDF"}
+                        </button>
                     </div>
-
-                    {error && <p className="resume-template-error">{error}</p>}
-
-                    <button
-                        type="button"
-                        className="resume-template-generate"
-                        onClick={handleGenerate}
-                        disabled={loading}
-                    >
-                        {loading ? "Generating..." : "Generate Resume PDF"}
-                    </button>
                 </div>
             </div>
         </div>

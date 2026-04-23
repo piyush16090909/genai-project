@@ -1,12 +1,15 @@
 // ── Shared Variables (mirrors home.scss theme) ────────────────────────────────
 $bg-page: #0d1117;
-$bg-card: #161b22;
-$bg-panel: #1c2230;
-$bg-input: #1e2535;
-$border-color: #2a3348;
-$text-primary: #e6edf3;
-$text-muted: #7d8590;
-$accent: #ff2d78;
+$bg-card: var(--theme-surface);
+$bg-panel: var(--theme-surface-2);
+$bg-input: var(--theme-input-bg);
+$border-color: var(--theme-border);
+$text-primary: var(--theme-text);
+$text-muted: var(--theme-muted);
+$accent: var(--theme-accent);
+$accent-2: var(--theme-accent-2);
+$page-shell: var(--theme-bg);
+$panel-shell: var(--theme-surface-2);
 $font-stack: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
 // severity palette
@@ -22,12 +25,12 @@ $severity-low: #3fb950;
 .interview-page {
     width: 100%;
     min-height: 100vh;
-    background-color: #050b16;
+    background-color: $page-shell;
     color: $text-primary;
     font-family: $font-stack;
     display: flex;
     align-items: stretch;
-    padding: 0.9rem;
+    padding: 0;
     box-sizing: border-box;
     position: relative;
 }
@@ -37,13 +40,13 @@ $severity-low: #3fb950;
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-    background-color: #070f1e;
+    max-width: none;
+    margin: 0;
+    background-color: $panel-shell;
     border: 1px solid $border-color;
-    border-radius: 0.4rem;
+    border-radius: 0;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .interview-topbar {
@@ -57,7 +60,7 @@ $severity-low: #3fb950;
     &__brand {
         font-size: 1.45rem;
         font-weight: 800;
-        color: #e8f0ff;
+        color: $text-primary;
         cursor: pointer;
 
         span {
@@ -69,7 +72,7 @@ $severity-low: #3fb950;
         margin: 0;
         text-align: center;
         font-size: 0.95rem;
-        color: #7f96c7;
+        color: $text-muted;
         font-weight: 500;
     }
 
@@ -77,7 +80,8 @@ $severity-low: #3fb950;
         margin: 0;
         text-align: right;
         font-size: 0.82rem;
-        color: #7f96c7;
+        color: $text-muted;
+        
     }
 }
 
@@ -111,7 +115,7 @@ $severity-low: #3fb950;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        color: #6f86b5;
+        color: $text-muted;
         padding: 0 0.75rem;
         margin-bottom: 0.5rem;
     }
@@ -125,7 +129,7 @@ $severity-low: #3fb950;
         background: none;
         border: none;
         border-radius: 0.5rem;
-        color: #8fa4cf;
+        color: $text-muted;
         font-family: $font-stack;
         font-size: 0.92rem;
         cursor: pointer;
@@ -133,7 +137,7 @@ $severity-low: #3fb950;
         transition: background-color 0.15s, color 0.15s;
 
         &:hover {
-            background-color: #111a33;
+            background-color: $bg-card;
             color: $text-primary;
         }
 
@@ -166,8 +170,8 @@ $severity-low: #3fb950;
     border: 1px solid $border-color;
     border-radius: 0.5rem;
     padding: 0.45rem 0.7rem;
-    background-color: #101b34;
-    color: #93a8cf;
+    background-color: $bg-card;
+    color: $text-muted;
     font-size: 0.84rem;
     cursor: pointer;
     transition: border-color 0.15s, color 0.15s;
@@ -179,7 +183,7 @@ $severity-low: #3fb950;
 
     &--download {
         margin-top: 0.25rem;
-        background: linear-gradient(135deg, #ff2d78, #e92169);
+        background: linear-gradient(135deg, $accent, $accent-2);
         border-color: transparent;
         color: #fff;
         font-weight: 600;
@@ -189,47 +193,46 @@ $severity-low: #3fb950;
 // ── Center Content ────────────────────────────────────────────────────────────
 .interview-content {
     flex: 1;
+    width: 100%;
     padding: 1.2rem 1.35rem;
-    overflow-y: auto;
-    min-height: initial;
-    max-height: calc(100vh - 7rem);
+    overflow: visible;
+    min-height: calc(100vh - 7rem);
+    max-height: none;
     padding-bottom: 5rem;
-    align-items: flex-start;
-
-
-
-
-
-
-
+    box-sizing: border-box;
 
     section {
+        width: 100%;
         min-height: 100%;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
 }
 
 .content-header {
     display: flex;
+    width: 100%;
     align-items: baseline;
     gap: 0.75rem;
     margin-bottom: 1.15rem;
     padding-bottom: 0.85rem;
-    border-bottom: 1px solid #1f2e50;
+    border-bottom: 1px solid $border-color;
 
     h2 {
         font-size: 2.15rem;
         font-weight: 700;
-        color: #dce8ff;
+        color: $text-primary;
         margin: 0;
     }
 
     &__count {
         font-size: 0.76rem;
-        color: #7f96c7;
-        background-color: #132244;
+        color: $text-muted;
+        background-color: $bg-card;
         padding: 0.15rem 0.6rem;
         border-radius: 2rem;
-        border: 1px solid #213863;
+        border: 1px solid $border-color;
     }
 }
 
@@ -272,7 +275,7 @@ $severity-low: #3fb950;
         border: none;
         border-radius: 0.5rem;
         padding: 0.55rem 0.9rem;
-        background: linear-gradient(135deg, $accent 0%, darken($accent, 10%) 100%);
+        background: linear-gradient(135deg, $accent 0%, $accent-2 100%);
         color: #fff;
         font-size: 0.82rem;
         font-weight: 600;
@@ -305,19 +308,20 @@ $severity-low: #3fb950;
 // ── Question Cards ────────────────────────────────────────────────────────────
 .q-list {
     display: flex;
+    width: 100%;
     flex-direction: column;
     gap: 0.85rem;
 }
 
 .q-card {
-    background-color: #0f1b36;
-    border: 1px solid #213252;
+    background-color: $bg-card;
+    border: 1px solid $border-color;
     border-radius: 0.6rem;
     overflow: hidden;
     transition: border-color 0.2s;
 
     &:hover {
-        border-color: lighten($border-color, 8%);
+        border-color: $border-color;
     }
 
     &__header {
@@ -349,7 +353,7 @@ $severity-low: #3fb950;
         margin: 0;
         font-size: 1rem;
         font-weight: 500;
-        color: #b8cff8;
+        color: $text-primary;
         line-height: 1.5;
     }
 
@@ -362,9 +366,9 @@ $severity-low: #3fb950;
 
     &__chip {
         font-size: 0.7rem;
-        color: #7da9f2;
-        background: #122748;
-        border: 1px solid #1f427a;
+        color: $text-muted;
+        background: $bg-panel;
+        border: 1px solid $border-color;
         border-radius: 0.3rem;
         padding: 0.1rem 0.35rem;
     }
@@ -398,7 +402,7 @@ $severity-low: #3fb950;
         p {
             margin: 0;
             font-size: 0.835rem;
-            color: lighten($text-muted, 15%);
+            color: $text-muted;
             line-height: 1.6;
         }
     }
@@ -452,6 +456,7 @@ $severity-low: #3fb950;
     gap: 0.5rem;
     padding: 0.75rem 0 0.75rem 3.5rem;
     position: relative;
+    background: transparent;
 
     // dot on timeline
     &::before {
@@ -502,7 +507,7 @@ $severity-low: #3fb950;
             align-items: flex-start;
             gap: 0.5rem;
             font-size: 0.845rem;
-            color: lighten($text-muted, 12%);
+            color: color-mix(in srgb, $text-muted 88%, white);
             line-height: 1.5;
         }
     }
@@ -525,7 +530,7 @@ $severity-low: #3fb950;
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
-    max-height: calc(100vh - 7rem);
+    max-height: none;
 }
 
 .sidebar-divider {
@@ -539,6 +544,7 @@ $severity-low: #3fb950;
     flex-direction: column;
     align-items: center;
     gap: 0.6rem;
+    background-color: transparent;
 
     &__label {
         font-size: 0.8rem;
@@ -599,6 +605,7 @@ $severity-low: #3fb950;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+    background-color: transparent;
 
     &__label {
         font-size: 0.8rem;
@@ -651,14 +658,14 @@ $severity-low: #3fb950;
     align-items: center;
     gap: 0.5rem;
     padding: 0.7rem 1rem;
-    background: linear-gradient(135deg, $accent 0%, darken($accent, 10%) 100%);
+    background: linear-gradient(135deg, $accent 0%, $accent-2 100%);
     color: #fff;
     border: none;
     border-radius: 999px;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 12px 30px var(--theme-shadow);
     transition: transform 0.1s, opacity 0.2s;
 
     svg {

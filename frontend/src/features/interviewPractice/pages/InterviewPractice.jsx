@@ -1,6 +1,7 @@
-import React, { useMemo, useRef, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router"
 import { useInterviewPractice } from "../hooks/useInterviewPractice"
+import { getInterviewReportById } from "../../interview/services/interview.api"
 import "../style/interviewPractice.scss"
 
 const START_PROMPT = "Start an interview practice session based on my profile."
@@ -40,6 +41,7 @@ const InterviewPractice = () => {
     const [ resumeData, setResumeData ] = useState({})
     const [ latestEvaluation, setLatestEvaluation ] = useState("")
     const [ error, setError ] = useState("")
+    const [ reportMeta, setReportMeta ] = useState(null)
 
     const listRef = useRef(null)
     const navigate = useNavigate()
@@ -48,6 +50,24 @@ const InterviewPractice = () => {
 
     const renderedMessages = useMemo(() => messages, [ messages ])
     const parsedEvaluation = useMemo(() => parseEvaluation(latestEvaluation), [ latestEvaluation ])
+
+    useEffect(() => {
+        const loadMeta = async () => {
+            if (!interviewId) {
+                setReportMeta(null)
+                return
+            }
+
+            try {
+                const response = await getInterviewReportById(interviewId)
+                setReportMeta(response?.interviewReport || null)
+            } catch {
+                setReportMeta(null)
+            }
+        }
+
+        loadMeta()
+    }, [ interviewId ])
 
     const syncScroll = () => {
         setTimeout(() => {
@@ -103,15 +123,22 @@ const InterviewPractice = () => {
         <div className="practice-page">
             <div className="practice-card">
                 <header className="practice-header">
-                    <div>
-                        <h1>Interview Practice Agent</h1>
-                        <p>Practice one question at a time with feedback on each answer.</p>
+                    <div className="practice-header__text">
+                        <h1 onClick={() => navigate("/")}>PrepAI <span className="practice-header__dot">&bull;</span></h1>
+                        <p>Ask questions grounded in your latest interview report.</p>
                     </div>
                     <div className="practice-header__actions">
                         <button type="button" onClick={() => navigate(-1)}>Back</button>
                         <button type="button" onClick={() => navigate("/")}>Home</button>
                     </div>
                 </header>
+
+                <div className="practice-context-row">
+                    <span className="practice-context-label">Context:</span>
+                    <span className="practice-context-chip">Interview Report: {reportMeta?.title || "SDE-1 Role"}</span>
+                    <span className="practice-context-chip">Match Score: {reportMeta?.matchScore ?? "--"}%</span>
+                    <span className="practice-context-chip">{reportMeta?.skillGaps?.length || 0} Skill Gaps</span>
+                </div>
 
                 {renderedMessages.length === 0 && (
                     <section className="practice-empty">

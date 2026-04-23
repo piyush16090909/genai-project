@@ -11,6 +11,38 @@ const NAV_ITEMS = [
     { id: 'roadmap', label: 'Road Map', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M7 12h10" /><path d="M10 18h4" /></svg>) },
 ]
 
+const LINK_ITEMS = [
+    {
+        id: 'practice-questions',
+        label: 'Practice Questions',
+        onClick: ({ navigate, interviewId }) => navigate(`/interview-practice/${interviewId}?section=questions`),
+        icon: (
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M8 6h13" />
+                <path d="M8 12h13" />
+                <path d="M8 18h13" />
+                <path d="M3 6h.01" />
+                <path d="M3 12h.01" />
+                <path d="M3 18h.01" />
+            </svg>
+        )
+    },
+    {
+        id: 'resume',
+        label: 'Resume',
+        onClick: ({ navigate, interviewId }) => navigate(`/resume/${interviewId}`),
+        icon: (
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <path d="M14 2v6h6" />
+                <path d="M8 13h8" />
+                <path d="M8 17h8" />
+                <path d="M8 9h2" />
+            </svg>
+        )
+    }
+]
+
 const getQuestionTags = (item) => {
     if (!item?.intention) {
         return []
@@ -84,7 +116,8 @@ const Interview = () => {
     const [ activeNav, setActiveNav ] = useState('technical')
     const [ roadmapDays, setRoadmapDays ] = useState("")
     const [ roadmapError, setRoadmapError ] = useState("")
-    const { report, getReportById, loading, getResumePdf, updateRoadmap } = useInterview()
+    const contentRef = React.useRef(null)
+    const { report, getReportById, loading, updateRoadmap } = useInterview()
     const { interviewId } = useParams()
     const navigate = useNavigate()
 
@@ -93,6 +126,24 @@ const Interview = () => {
             getReportById(interviewId)
         }
     }, [ interviewId, getReportById ])
+
+    useEffect(() => {
+        if (contentRef.current) {
+            contentRef.current.scrollTo({ top: 0, behavior: 'auto' })
+        }
+        window.scrollTo({ top: 0, behavior: 'auto' })
+    }, [ activeNav ])
+
+    useEffect(() => {
+        if (activeNav !== 'roadmap') {
+            return
+        }
+
+        if (contentRef.current) {
+            contentRef.current.scrollTo({ top: 0, behavior: 'auto' })
+        }
+        window.scrollTo({ top: 0, behavior: 'auto' })
+    }, [ activeNav, report?.preparationPlan?.length ])
 
     const handleRegenerateRoadmap = async () => {
         const normalized = Number(roadmapDays)
@@ -103,6 +154,10 @@ const Interview = () => {
 
         setRoadmapError("")
         await updateRoadmap({ interviewId, roadmapDays: normalized })
+        if (contentRef.current) {
+            contentRef.current.scrollTo({ top: 0, behavior: 'auto' })
+        }
+        window.scrollTo({ top: 0, behavior: 'auto' })
     }
 
 
@@ -128,7 +183,7 @@ const Interview = () => {
         <div className='interview-page'>
             <div className='interview-layout'>
                 <header className='interview-topbar'>
-                    <div className='interview-topbar__brand' onClick={() => navigate('/')}>Prep<span>AI</span></div>
+                    <div className='interview-topbar__brand' onClick={() => navigate('/dashboard')}>Prep<span>AI</span></div>
                     <h1 className='interview-topbar__title'>Interview Report for {reportTitle}</h1>
                     <p className='interview-topbar__date'>{formattedDate}</p>
                 </header>
@@ -148,20 +203,23 @@ const Interview = () => {
                                     {item.label}
                                 </button>
                             ))}
-                        </div>
-                        <div className='nav-actions'>
-                            <button className='nav-action-button' onClick={() => navigate(-1)}>&larr; Back</button>
-                            <button className='nav-action-button' onClick={() => navigate('/')}>Home</button>
-                            <button className='nav-action-button' onClick={() => navigate(`/interview-practice/${interviewId}`)}>Interview Practice</button>
-                            <button className='nav-action-button' onClick={() => navigate(`/resume-template/${interviewId}`)}>Resume Templates</button>
-                            <button onClick={() => { getResumePdf(interviewId) }} className='nav-action-button nav-action-button--download'>Download Resume</button>
+                            {LINK_ITEMS.map((item) => (
+                                <button
+                                    key={item.id}
+                                    className='interview-nav__item'
+                                    onClick={() => item.onClick({ navigate, interviewId })}
+                                >
+                                    <span className='interview-nav__icon'>{item.icon}</span>
+                                    {item.label}
+                                </button>
+                            ))}
                         </div>
                     </nav>
 
                     <div className='interview-divider' />
 
                     {/* ── Center Content ── */}
-                    <main className='interview-content'>
+                    <main className='interview-content' ref={contentRef}>
                     {activeNav === 'technical' && (
                         <section>
                             <div className='content-header'>

@@ -10,7 +10,7 @@
     transition: all 0.3s ease-in-out;
 
     &.primary-button{
-        background: linear-gradient(135deg, #ff2d78 0%, #d81f60 100%);
+        background: linear-gradient(135deg, var(--theme-accent) 0%, var(--theme-accent-2) 100%);
         color: white;
     }
 

@@ -1,34 +1,39 @@
-$bg-page: #0d1117;
-$bg-card: #161b22;
-$bg-panel: #1c2230;
-$bg-input: #1e2535;
-$border-color: #2a3348;
-$text-primary: #e6edf3;
-$text-muted: #7d8590;
-$accent: #ff2d78;
+$bg-page: var(--theme-bg);
+$bg-card: var(--theme-surface);
+$bg-panel: var(--theme-surface-2);
+$bg-input: var(--theme-input-bg);
+$border-color: var(--theme-border);
+$text-primary: var(--theme-text);
+$text-muted: var(--theme-muted);
+$accent: var(--theme-accent);
+$accent-2: var(--theme-accent-2);
 $font-stack: "Space Grotesk", "Instrument Sans", sans-serif;
 
 .resume-template-page {
     min-height: 100vh;
-    background: radial-gradient(circle at 50% 0%, rgba(255, 45, 120, 0.08), transparent 40%), #040c19;
+    background:
+        radial-gradient(circle at top left, rgba($accent, 0.12), transparent 28%),
+        radial-gradient(circle at top right, rgba($accent-2, 0.1), transparent 24%),
+        $bg-page;
     color: $text-primary;
     font-family: $font-stack;
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
-    padding: 2rem;
+    padding: 0;
 }
 
 .resume-template-card {
-    width: min(860px, 100%);
-    background: linear-gradient(180deg, rgba(19, 29, 52, 0.95), rgba(14, 21, 41, 0.95));
-    border: 1px solid #213259;
-    border-radius: 0.9rem;
-    padding: 1.6rem;
+    width: 100%;
+    min-height: 100vh;
+    background: $bg-card;
+    border: none;
+    border-radius: 0;
+    padding: 1.1rem 1.35rem;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
-    box-shadow: 0 20px 55px rgba(0, 0, 0, 0.45);
+    gap: 1.1rem;
+    box-shadow: none;
 }
 
 .resume-template-header {
@@ -36,20 +41,25 @@ $font-stack: "Space Grotesk", "Instrument Sans", sans-serif;
     justify-content: space-between;
     gap: 1rem;
     align-items: flex-start;
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid $border-color;
 
     &__copy {
+        max-width: 680px;
+
         h1 {
             margin: 0 0 0.2rem;
-            font-size: 2rem;
-            letter-spacing: -0.01em;
-            color: #deebff;
+            font-size: 1.9rem;
+            letter-spacing: -0.02em;
+            color: $text-primary;
             cursor: pointer;
         }
 
         p {
             margin: 0;
-            color: #7f96c7;
-            font-size: 0.9rem;
+            color: $text-muted;
+            font-size: 0.92rem;
+            line-height: 1.4;
         }
     }
 }
@@ -57,13 +67,15 @@ $font-stack: "Space Grotesk", "Instrument Sans", sans-serif;
 .resume-template-actions {
     display: flex;
     gap: 0.5rem;
+    flex-shrink: 0;
 
     button {
-        border: 1px solid #2a3f6d;
-        background-color: #16274a;
-        color: #8ea9d7;
-        padding: 0.42rem 0.82rem;
-        border-radius: 0.5rem;
+        border: 1px solid $border-color;
+        background-color: $bg-panel;
+        color: $text-muted;
+        min-height: 38px;
+        padding: 0.45rem 0.85rem;
+        border-radius: 0.55rem;
         cursor: pointer;
         transition: border-color 0.2s, color 0.2s;
         font-size: 0.78rem;
@@ -79,14 +91,39 @@ $font-stack: "Space Grotesk", "Instrument Sans", sans-serif;
 .resume-template-body {
     display: flex;
     flex-direction: column;
-    gap: 0.95rem;
+    gap: 0.9rem;
+    flex: 1;
+}
+
+.resume-template-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid $border-color;
+    border-radius: 0.75rem;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.015), rgba(255, 255, 255, 0.01));
+}
+
+.resume-template-section__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.resume-template-section__hint {
+    margin: 0;
+    font-size: 0.82rem;
+    color: $text-muted;
 }
 
 .resume-template-label {
     font-size: 0.72rem;
-    color: #5f78ab;
+    color: $text-muted;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     font-weight: 700;
 }
 
@@ -94,26 +131,27 @@ $font-stack: "Space Grotesk", "Instrument Sans", sans-serif;
     position: relative;
 
     &::after {
-        content: '▾';
+        content: "▾";
         position: absolute;
-        right: 0.8rem;
+        right: 1rem;
         top: 50%;
         transform: translateY(-50%);
-        color: #7693c6;
+        color: $text-muted;
         pointer-events: none;
-        font-size: 0.8rem;
+        font-size: 0.95rem;
     }
 
     select {
         width: 100%;
         appearance: none;
-        background-color: #0b162f;
-        border: 1px solid #2a3f6d;
-        border-radius: 0.58rem;
-        padding: 0.72rem 2rem 0.72rem 0.78rem;
-        color: #d5e5ff;
+        background-color: $bg-input;
+        border: 1px solid $border-color;
+        border-radius: 0.65rem;
+        min-height: 46px;
+        padding: 0.72rem 2.5rem 0.72rem 0.9rem;
+        color: $text-primary;
         font-family: $font-stack;
-        font-size: 0.86rem;
+        font-size: 0.88rem;
 
         &:focus {
             outline: none;
@@ -123,38 +161,40 @@ $font-stack: "Space Grotesk", "Instrument Sans", sans-serif;
 }
 
 .resume-template-options {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 0.6rem;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0.7rem;
 }
 
 .template-tile {
-    width: 18.7%;
-    min-width: 112px;
-    aspect-ratio: 1;
-    border: 1px solid #273c66;
-    background: #141f3a;
-    color: #c6d7f8;
-    border-radius: 0.6rem;
-    padding: 0.45rem;
+    width: 100%;
+    min-width: 0;
+    aspect-ratio: 0.88;
+    border: 1px solid $border-color;
+    background: $bg-panel;
+    color: $text-primary;
+    border-radius: 0.7rem;
+    padding: 0.48rem;
     cursor: pointer;
-    font-size: 0.85rem;
-    transition: border-color 0.2s, transform 0.15s;
+    font-size: 0.78rem;
+    transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    gap: 0.45rem;
 
     &__preview {
-        height: 70%;
+        flex: 1;
+        min-height: 58px;
         border-radius: 0.45rem;
         display: grid;
         align-content: center;
-        gap: 0.22rem;
-        padding: 0.65rem;
+        gap: 0.18rem;
+        padding: 0.48rem;
 
         span {
             display: block;
-            height: 2px;
+            height: 1px;
             border-radius: 999px;
             background: rgba(255, 255, 255, 0.45);
 
@@ -172,12 +212,13 @@ $font-stack: "Space Grotesk", "Instrument Sans", sans-serif;
     }
 
     &:hover {
-        transform: translateY(-1px);
+        transform: translateY(-2px);
+        box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
     }
 
     &--active {
-        border-color: #ff2d78;
-        box-shadow: 0 0 0 1px rgba(255, 45, 120, 0.2) inset;
+        border-color: $accent;
+        box-shadow: 0 0 0 1px rgba($accent, 0.4), 0 18px 36px rgba($accent, 0.16);
     }
 
     &--default {
@@ -186,9 +227,13 @@ $font-stack: "Space Grotesk", "Instrument Sans", sans-serif;
 
             span {
                 background: #3d7ce6;
-                &:nth-child(1) { background: #ff2d78; }
+
+                &:nth-child(1) {
+                    background: #ff2d78;
+                }
             }
         }
+
         .template-tile__name {
             color: #ff4a8a;
         }
@@ -202,6 +247,7 @@ $font-stack: "Space Grotesk", "Instrument Sans", sans-serif;
                 background: #9d8f75;
             }
         }
+
         .template-tile__name {
             color: #e8dcc4;
         }
@@ -215,6 +261,7 @@ $font-stack: "Space Grotesk", "Instrument Sans", sans-serif;
                 background: #8f72ff;
             }
         }
+
         .template-tile__name {
             color: #8d75ff;
         }
@@ -228,6 +275,7 @@ $font-stack: "Space Grotesk", "Instrument Sans", sans-serif;
                 background: #24da94;
             }
         }
+
         .template-tile__name {
             color: #24da94;
         }
@@ -241,30 +289,81 @@ $font-stack: "Space Grotesk", "Instrument Sans", sans-serif;
                 background: #f2b14c;
             }
         }
+
         .template-tile__name {
             color: #f2b14c;
         }
     }
+
+    &--manual {
+        .template-tile__preview {
+            background: #10211d;
+
+            span {
+                background: #4ade80;
+            }
+        }
+
+        .template-tile__name {
+            color: #4ade80;
+        }
+    }
+}
+
+.resume-template-manual-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    padding: 0.9rem;
+    border: 1px dashed $border-color;
+    border-radius: 0.7rem;
+    background: $bg-panel;
+
+    input {
+        border: 1px solid $border-color;
+        border-radius: 0.65rem;
+        padding: 0.68rem 0.75rem;
+        color: $text-primary;
+        background: $bg-input;
+        font-family: $font-stack;
+        font-size: 0.84rem;
+    }
+}
+
+.resume-template-manual-file {
+    color: $text-muted;
+    font-size: 0.88rem;
+    margin: 0;
+}
+
+.resume-template-footer {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    padding-top: 0.5rem;
 }
 
 .resume-template-error {
-    color: #ff6b99;
+    color: #d62828;
     font-size: 0.82rem;
     margin: 0;
 }
 
 .resume-template-generate {
-    width: 100%;
+    width: min(360px, 100%);
+    align-self: center;
     border: none;
-    border-radius: 0.72rem;
-    padding: 0.82rem 1.2rem;
-    background: linear-gradient(180deg, #ff3c8c 0%, #e32870 100%);
+    border-radius: 0.75rem;
+    min-height: 48px;
+    padding: 0.82rem 1.1rem;
+    background: linear-gradient(180deg, $accent 0%, $accent-2 100%);
     color: #fff;
     cursor: pointer;
     font-weight: 700;
-    font-size: 1.02rem;
+    font-size: 0.95rem;
     transition: opacity 0.2s, transform 0.1s;
-    margin-top: 0.55rem;
 
     &:hover {
         opacity: 0.9;
@@ -280,9 +379,21 @@ $font-stack: "Space Grotesk", "Instrument Sans", sans-serif;
     }
 }
 
+@media (max-width: 1200px) {
+    .resume-template-options {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
 @media (max-width: 720px) {
     .resume-template-page {
-        padding: 1rem;
+        padding: 0;
+    }
+
+    .resume-template-card {
+        min-height: 100vh;
+        padding: 0.95rem;
+        border-radius: 0;
     }
 
     .resume-template-header {
@@ -292,13 +403,28 @@ $font-stack: "Space Grotesk", "Instrument Sans", sans-serif;
 
     .resume-template-actions {
         width: 100%;
+
+        button {
+            flex: 1;
+        }
     }
 
     .resume-template-options {
-        flex-wrap: wrap;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .template-tile {
-        width: calc(50% - 0.3rem);
+    .resume-template-section {
+        padding: 0.85rem;
+    }
+
+    .resume-template-select-wrap {
+        select {
+            min-height: 44px;
+            font-size: 0.86rem;
+        }
+    }
+
+    .template-tile__preview {
+        min-height: 52px;
     }
 }

@@ -171,6 +171,72 @@ async function deleteInterviewReportController(req, res) {
 }
 
 /**
+ * @description Controller to update an interview report by interviewId.
+ */
+async function updateInterviewReportController(req, res) {
+    const { interviewId } = req.params
+
+    const interviewReport = await interviewReportModel.findOne({ _id: interviewId, user: req.user.id })
+
+    if (!interviewReport) {
+        return res.status(404).json({
+            message: "Interview report not found."
+        })
+    }
+
+    let resumeText = interviewReport.resume || ""
+    if (req.file && req.file.buffer) {
+        const resumeContent = await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText()
+        resumeText = resumeContent.text
+    }
+
+    const jobDescription = typeof req.body.jobDescription === "string"
+        ? req.body.jobDescription
+        : interviewReport.jobDescription
+    const selfDescription = typeof req.body.selfDescription === "string"
+        ? req.body.selfDescription
+        : (interviewReport.selfDescription || "")
+
+    if (!resumeText && !selfDescription.trim()) {
+        return res.status(400).json({
+            message: "Please provide a resume or a short self description."
+        })
+    }
+
+    const requestedRoadmapDays = req.body.roadmapDays ? Number(req.body.roadmapDays) : undefined
+    const existingRoadmapDays = interviewReport.preparationPlan?.length || undefined
+    const roadmapDays = Number.isFinite(requestedRoadmapDays) ? requestedRoadmapDays : existingRoadmapDays
+
+    const interViewReportByAi = await generateInterviewReport({
+        resume: resumeText,
+        selfDescription,
+        jobDescription,
+        roadmapDays
+    })
+
+    if (!Number.isFinite(roadmapDays)) {
+        interViewReportByAi.preparationPlan = []
+    }
+
+    interviewReport.resume = resumeText
+    interviewReport.selfDescription = selfDescription
+    interviewReport.jobDescription = jobDescription
+    interviewReport.matchScore = interViewReportByAi.matchScore
+    interviewReport.technicalQuestions = interViewReportByAi.technicalQuestions || []
+    interviewReport.behavioralQuestions = interViewReportByAi.behavioralQuestions || []
+    interviewReport.skillGaps = interViewReportByAi.skillGaps || []
+    interviewReport.preparationPlan = interViewReportByAi.preparationPlan || []
+    interviewReport.title = interViewReportByAi.title
+
+    await interviewReport.save()
+
+    res.status(200).json({
+        message: "Interview report updated successfully.",
+        interviewReport
+    })
+}
+
+/**
  * @description Controller to generate resume PDF using a template.
  */
 async function generateResumePdfWithTemplateController(req, res) {
@@ -230,5 +296,6 @@ module.exports = {
     generateResumePdfController,
     regenerateRoadmapController,
     deleteInterviewReportController,
+    updateInterviewReportController,
     generateResumePdfWithTemplateController
 }

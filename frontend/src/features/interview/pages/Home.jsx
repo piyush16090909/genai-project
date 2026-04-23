@@ -1,34 +1,100 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import "../style/home.scss"
 import { useInterview } from '../hooks/useInterview.js'
 import { useAuth } from '../../auth/hooks/useAuth.js'
 import { useNavigate } from 'react-router'
+import GlobalThemeToggle from '../../../theme/GlobalThemeToggle.jsx'
 
 const Home = () => {
 
-    const { loading, generateReport, reports, deleteReport } = useInterview()
+    const { loading, generateReport, editReport, reports, deleteReport, getReportById } = useInterview()
     const { handleLogout } = useAuth()
     const [ jobDescription, setJobDescription ] = useState("")
     const [ selfDescription, setSelfDescription ] = useState("")
     const [ resumeFile, setResumeFile ] = useState(null)
     const [ resumeError, setResumeError ] = useState("")
     const [ formError, setFormError ] = useState("")
+    const [ openMenuReportId, setOpenMenuReportId ] = useState(null)
+    const [ editingReportId, setEditingReportId ] = useState(null)
+    const [ editingHasResume, setEditingHasResume ] = useState(false)
+    const [ isCreating, setIsCreating ] = useState(false)
+    const [ deleteConfirmReport, setDeleteConfirmReport ] = useState(null)
 
     const navigate = useNavigate()
 
-    const [isCreating, setIsCreating] = useState(false)
+    useEffect(() => {
+        const handleWindowClick = () => {
+            setOpenMenuReportId(null)
+        }
 
-    const handleGenerateReport = async () => {
-        if (!resumeFile && !selfDescription.trim()) {
+        window.addEventListener("click", handleWindowClick)
+
+        return () => {
+            window.removeEventListener("click", handleWindowClick)
+        }
+    }, [])
+
+    useEffect(() => {
+        if (!deleteConfirmReport) {
+            return undefined
+        }
+
+        const handleEscape = (event) => {
+            if (event.key === "Escape") {
+                setDeleteConfirmReport(null)
+            }
+        }
+
+        window.addEventListener("keydown", handleEscape)
+
+        return () => {
+            window.removeEventListener("keydown", handleEscape)
+        }
+    }, [ deleteConfirmReport ])
+
+    const resetPlanForm = () => {
+        setJobDescription("")
+        setSelfDescription("")
+        setResumeFile(null)
+        setResumeError("")
+        setFormError("")
+        setOpenMenuReportId(null)
+        setEditingReportId(null)
+        setEditingHasResume(false)
+    }
+
+    const openCreatePlan = () => {
+        resetPlanForm()
+        setIsCreating(true)
+    }
+
+    const closeCreatePlan = () => {
+        resetPlanForm()
+        setIsCreating(false)
+    }
+
+    const handleSubmitReport = async () => {
+        const hasResumeContent = Boolean(resumeFile || editingHasResume)
+
+        if (!hasResumeContent && !selfDescription.trim()) {
             setFormError("Please provide a resume or a short self description.")
             return
         }
+
         setFormError("")
-        const data = await generateReport({ jobDescription, selfDescription, resumeFile })
+
+        const data = editingReportId
+            ? await editReport({ interviewId: editingReportId, jobDescription, selfDescription, resumeFile })
+            : await generateReport({ jobDescription, selfDescription, resumeFile })
+
         if (!data?._id) {
-            setFormError("Interview plan could not be created. Please check backend database connection and try again.")
+            setFormError(editingReportId
+                ? "Interview plan could not be updated. Please check backend database connection and try again."
+                : "Interview plan could not be created. Please check backend database connection and try again.")
             return
         }
+
+        resetPlanForm()
         navigate('/interview/' + data._id)
     }
 
@@ -37,13 +103,41 @@ const Home = () => {
         navigate('/login')
     }
 
-    const handleDeleteReport = async (e, interviewId) => {
+    const handleDeleteReport = (e, report) => {
         e.stopPropagation()
-        const shouldDelete = window.confirm("Delete this interview report?")
-        if (!shouldDelete) {
+        setOpenMenuReportId(null)
+        setDeleteConfirmReport(report)
+    }
+
+    const handleConfirmDeleteReport = async () => {
+        if (!deleteConfirmReport?._id) {
             return
         }
-        await deleteReport(interviewId)
+
+        await deleteReport(deleteConfirmReport._id)
+        setDeleteConfirmReport(null)
+    }
+
+    const handleEditReport = async (e, interviewId) => {
+        e.stopPropagation()
+        setOpenMenuReportId(null)
+
+        const report = await getReportById(interviewId)
+
+        if (!report?._id) {
+            window.alert("Unable to load this interview plan for editing.")
+            return
+        }
+
+        setJobDescription(report.jobDescription || "")
+        setSelfDescription(report.selfDescription || "")
+        setResumeFile(null)
+        setResumeError("")
+        setFormError("")
+        setEditingReportId(report._id)
+        setEditingHasResume(Boolean(report.resume?.trim()))
+        setIsCreating(true)
+        window.scrollTo({ top: 0, behavior: "smooth" })
     }
 
     const handleResumeChange = (e) => {
@@ -83,23 +177,32 @@ const Home = () => {
 
     return (
         <div className='home-page'>
-            {/* Top Bar */}
             <div className='top-bar'>
-                <div className='brand' onClick={() => { setIsCreating(false); navigate('/') }}>
+                <div className='brand' onClick={() => { closeCreatePlan(); navigate('/dashboard') }}>
                     <span>Prep</span>
                     <span className='brand-highlight'>AI</span>
                 </div>
-                {!isCreating && reports.length > 0 ? (
-                    <button className='button btn-new' onClick={() => setIsCreating(true)}>+ New Interview Plan</button>
-                ) : (
-                    <button className='logout-button' onClick={handleLogoutClick}>Logout</button>
-                )}
+                <div className='top-bar__actions'>
+                    {!isCreating && reports.length > 0 ? (
+                        <>
+                            <button className='button btn-new' onClick={openCreatePlan}>+ New Interview Plan</button>
+                            <button className='button btn-resume' onClick={() => navigate('/resume')}>Resume</button>
+                            <GlobalThemeToggle className='theme-nav-toggle' />
+                            <button className='logout-button' onClick={handleLogoutClick}>Logout</button>
+                        </>
+                    ) : (
+                        <>
+                            {reports.length > 0 && <button className='button btn-resume' onClick={closeCreatePlan}>&larr; Back</button>}
+                            <GlobalThemeToggle className='theme-nav-toggle' />
+                            <button className='logout-button' onClick={handleLogoutClick}>Logout</button>
+                        </>
+                    )}
+                </div>
             </div>
 
             <div className='section-divider' />
 
             {!isCreating && reports.length > 0 ? (
-                /* Dashboard View */
                 <section className='recent-reports'>
                     <div className='recent-reports__header'>
                         <h2>My Recent Interview Plans</h2>
@@ -126,11 +229,25 @@ const Home = () => {
                                     <button
                                         type='button'
                                         className='report-item__menu'
-                                        onClick={(e) => handleDeleteReport(e, report._id)}
-                                        aria-label='Delete report'
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            setOpenMenuReportId((prev) => prev === report._id ? null : report._id)
+                                        }}
+                                        aria-label='Open report actions'
+                                        aria-expanded={openMenuReportId === report._id}
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
                                     </button>
+                                    {openMenuReportId === report._id && (
+                                        <div className='report-item__menu-dropdown' onClick={(e) => e.stopPropagation()}>
+                                            <button type='button' className='report-item__menu-action' onClick={(e) => handleEditReport(e, report._id)}>
+                                                Edit
+                                            </button>
+                                            <button type='button' className='report-item__menu-action report-item__menu-action--danger' onClick={(e) => handleDeleteReport(e, report)}>
+                                                Delete
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                                 <h3 className='report-item__title'>{report.title || 'Untitled Position'}</h3>
                                 <p className='report-item__meta'>Generated on {new Date(report.createdAt).toLocaleDateString()}</p>
@@ -149,7 +266,7 @@ const Home = () => {
                                 </button>
                             </li>
                         ))}
-                        <li className='report-item report-item--new' onClick={() => setIsCreating(true)}>
+                        <li className='report-item report-item--new' onClick={openCreatePlan}>
                             <div className='report-item__new'>
                                 <div className='report-item__plus'>+</div>
                                 <span>Create New Plan</span>
@@ -158,17 +275,14 @@ const Home = () => {
                     </ul>
                 </section>
             ) : (
-                /* Create Plan View */
                 <div className='create-plan-view'>
                     <header className='page-header'>
-                        <span className='page-header__tag'>AI-POWERED INTERVIEW COACH</span>
-                        <h1>Create Your Custom <span className='highlight'>Interview Plan</span></h1>
-                        <p>Let our AI analyze the job requirements and your unique profile to build a winning strategy.</p>
+                        <span className='page-header__tag'>{editingReportId ? 'EDIT INTERVIEW PLAN' : 'AI-POWERED INTERVIEW COACH'}</span>
+                        <h1>{editingReportId ? 'Update Your ' : 'Create Your Custom '}<span className='highlight'>Interview Plan</span></h1>
+                        <p>{editingReportId ? 'Adjust the saved details below and we will refresh this interview plan for the same report.' : 'Let our AI analyze the job requirements and your unique profile to build a winning strategy.'}</p>
                     </header>
 
-                    {/* Main Cards Container */}
                     <div className='interview-cards-container'>
-                        {/* Left Panel - Job Description */}
                         <div className='panel panel--left'>
                             <div className='panel__header'>
                                 <span className='panel__icon'>
@@ -179,6 +293,7 @@ const Home = () => {
                             </div>
                             <div className='panel__textarea-wrapper'>
                                 <textarea
+                                    value={jobDescription}
                                     onChange={(e) => { setJobDescription(e.target.value) }}
                                     className='panel__textarea'
                                     placeholder="Paste the full job description here...&#10;e.g. 'Senior Frontend Engineer at Google requires proficiency in React, TypeScript, and large-scale system design...'"
@@ -199,16 +314,14 @@ const Home = () => {
                             </div>
                         </div>
 
-                        {/* Right Panel - Profile */}
                         <div className='panel panel--right'>
                             <div className='panel__header'>
-                                <span className='panel__icon' style={{color: '#ff2d78'}}>
+                                <span className='panel__icon' style={{ color: '#ff2d78' }}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
                                 </span>
                                 <h2>Your Profile</h2>
                             </div>
 
-                            {/* Upload Resume */}
                             <div className='upload-section'>
                                 <div className='upload-header'>
                                     <label className='section-label'>Upload Resume</label>
@@ -223,18 +336,17 @@ const Home = () => {
                                     <input hidden type='file' id='resume' name='resume' accept='.pdf' onChange={handleResumeChange} />
                                 </label>
                                 <p className='dropzone__meta'>
-                                    {resumeFile ? "Selected: " + resumeFile.name : ""}
+                                    {resumeFile ? "Selected: " + resumeFile.name : editingHasResume ? "Using your saved resume. Upload a new PDF only if you want to replace it." : ""}
                                 </p>
                                 {resumeError && <p className='dropzone__error'>{resumeError}</p>}
                             </div>
 
-                            {/* OR Divider */}
                             <div className='or-divider'><span>or</span></div>
 
-                            {/* Quick Self-Description */}
                             <div className='self-description'>
                                 <label className='section-label' htmlFor='selfDescription'>Quick Self-Description</label>
                                 <textarea
+                                    value={selfDescription}
                                     onChange={(e) => { setSelfDescription(e.target.value) }}
                                     id='selfDescription'
                                     name='selfDescription'
@@ -243,10 +355,9 @@ const Home = () => {
                                 />
                             </div>
 
-                            {/* Info Box */}
                             <div className='info-box'>
                                 <span className='info-box__icon'>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5da9ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5da9ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
                                 </span>
                                 <p>Either a <strong>Resume</strong> or a <strong>Self Description</strong> is required to generate a personalized plan.</p>
                                 {formError && <p className='dropzone__error'>{formError}</p>}
@@ -254,14 +365,52 @@ const Home = () => {
                         </div>
                     </div>
 
-                    {/* Card Footer Out of Container */}
                     <div className='interview-action-footer'>
                         <span className='footer-info'>
-                            <span className='dot-status'/> AI-Powered Strategy Generation &middot; Approx 30s
+                            <span className='dot-status' /> AI-Powered Strategy Generation &middot; Approx 30s
                         </span>
-                        <button onClick={handleGenerateReport} className='generate-btn'>
-                            <span className="btn-star">&#9733;</span> Generate My Interview Strategy
+                        <button onClick={handleSubmitReport} className='generate-btn'>
+                            <span className="btn-star">&#9733;</span> {editingReportId ? 'Save Interview Plan Changes' : 'Generate My Interview Strategy'}
                         </button>
+                    </div>
+                </div>
+            )}
+
+            {deleteConfirmReport && (
+                <div
+                    className='delete-report-modal'
+                    role='presentation'
+                    onClick={() => setDeleteConfirmReport(null)}
+                >
+                    <div
+                        className='delete-report-modal__card'
+                        role='dialog'
+                        aria-modal='true'
+                        aria-labelledby='delete-report-title'
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className='delete-report-modal__badge'>Final Check</div>
+                        <h3 id='delete-report-title'>Delete this interview plan?</h3>
+                        <p>
+                            <strong>{deleteConfirmReport.title || 'Untitled Position'}</strong>
+                            {" "}will be removed from your dashboard permanently.
+                        </p>
+                        <div className='delete-report-modal__actions'>
+                            <button
+                                type='button'
+                                className='delete-report-modal__button delete-report-modal__button--ghost'
+                                onClick={() => setDeleteConfirmReport(null)}
+                            >
+                                Keep Plan
+                            </button>
+                            <button
+                                type='button'
+                                className='delete-report-modal__button delete-report-modal__button--danger'
+                                onClick={handleConfirmDeleteReport}
+                            >
+                                Delete Plan
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

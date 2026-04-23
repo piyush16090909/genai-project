@@ -2,6 +2,7 @@ import React,{useState} from 'react'
 import { useNavigate, Link } from 'react-router'
 import "../auth.form.scss"
 import { useAuth } from '../hooks/useAuth'
+import GlobalThemeToggle from '../../../theme/GlobalThemeToggle.jsx'
 
 const Register = () => {
 
@@ -21,15 +22,19 @@ const Register = () => {
             setErrorMessage(result?.message || "Registration failed")
             return
         }
-        navigate("/")
+        navigate("/dashboard")
     }
 
     if(loading){
-        return (<main><h1>Loading.......</h1></main>)
+        return (<main className='auth-form-page'><h1>Loading.......</h1></main>)
     }
 
     return (
-        <main>
+        <main className='auth-form-page'>
+            <div className='auth-form-topbar'>
+                <Link to="/" className='auth-back-link'>Back to home</Link>
+                <GlobalThemeToggle className='theme-nav-toggle' />
+            </div>
             <div className="form-container">
                 <h1>Register</h1>
 
