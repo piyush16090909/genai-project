@@ -9,37 +9,44 @@ const interviewReportModel = require("../models/interviewReport.model")
  * @description Controller to generate interview report based on user self description, resume and job description.
  */
 async function generateInterViewReportController(req, res) {
-    let resumeText = ""
-    if (req.file && req.file.buffer) {
-        const resumeContent = await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText()
-        resumeText = resumeContent.text
+    try {
+        let resumeText = ""
+        if (req.file && req.file.buffer) {
+            const resumeContent = await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText()
+            resumeText = resumeContent.text
+        }
+        const { selfDescription, jobDescription, roadmapDays } = req.body
+        const roadmapDaysNumber = roadmapDays ? Number(roadmapDays) : undefined
+
+        const interViewReportByAi = await generateInterviewReport({
+            resume: resumeText,
+            selfDescription,
+            jobDescription,
+            roadmapDays: Number.isFinite(roadmapDaysNumber) ? roadmapDaysNumber : undefined
+        })
+
+        if (!Number.isFinite(roadmapDaysNumber)) {
+            interViewReportByAi.preparationPlan = []
+        }
+
+        const interviewReport = await interviewReportModel.create({
+            user: req.user.id,
+            resume: resumeText,
+            selfDescription,
+            jobDescription,
+            ...interViewReportByAi
+        })
+
+        res.status(201).json({
+            message: "Interview report generated successfully.",
+            interviewReport
+        })
+    } catch (error) {
+        console.error("Interview report generation failed:", error?.message || error)
+        return res.status(500).json({
+            message: error?.message || "Failed to generate interview report."
+        })
     }
-    const { selfDescription, jobDescription, roadmapDays } = req.body
-    const roadmapDaysNumber = roadmapDays ? Number(roadmapDays) : undefined
-
-    const interViewReportByAi = await generateInterviewReport({
-        resume: resumeText,
-        selfDescription,
-        jobDescription,
-        roadmapDays: Number.isFinite(roadmapDaysNumber) ? roadmapDaysNumber : undefined
-    })
-
-    if (!Number.isFinite(roadmapDaysNumber)) {
-        interViewReportByAi.preparationPlan = []
-    }
-
-    const interviewReport = await interviewReportModel.create({
-        user: req.user.id,
-        resume: resumeText,
-        selfDescription,
-        jobDescription,
-        ...interViewReportByAi
-    })
-
-    res.status(201).json({
-        message: "Interview report generated successfully.",
-        interviewReport
-    })
 
 }
 
@@ -115,40 +122,47 @@ async function generateResumePdfController(req, res) {
  * @description Controller to regenerate roadmap based on desired days.
  */
 async function regenerateRoadmapController(req, res) {
-    const { interviewId } = req.params
-    const { roadmapDays } = req.body
-    const roadmapDaysNumber = roadmapDays ? Number(roadmapDays) : NaN
+    try {
+        const { interviewId } = req.params
+        const { roadmapDays } = req.body
+        const roadmapDaysNumber = roadmapDays ? Number(roadmapDays) : NaN
 
-    if (!Number.isFinite(roadmapDaysNumber) || roadmapDaysNumber <= 0) {
-        return res.status(400).json({
-            message: "Roadmap days must be a positive number."
+        if (!Number.isFinite(roadmapDaysNumber) || roadmapDaysNumber <= 0) {
+            return res.status(400).json({
+                message: "Roadmap days must be a positive number."
+            })
+        }
+
+        const interviewReport = await interviewReportModel.findOne({ _id: interviewId, user: req.user.id })
+
+        if (!interviewReport) {
+            return res.status(404).json({
+                message: "Interview report not found."
+            })
+        }
+
+        const { resume, jobDescription, selfDescription } = interviewReport
+
+        const interViewReportByAi = await generateInterviewReport({
+            resume: resume || "",
+            selfDescription: selfDescription || "",
+            jobDescription: jobDescription || "",
+            roadmapDays: roadmapDaysNumber
+        })
+
+        interviewReport.preparationPlan = interViewReportByAi.preparationPlan || []
+        await interviewReport.save()
+
+        res.status(200).json({
+            message: "Roadmap updated successfully.",
+            interviewReport
+        })
+    } catch (error) {
+        console.error("Roadmap regeneration failed:", error?.message || error)
+        return res.status(500).json({
+            message: error?.message || "Failed to regenerate roadmap."
         })
     }
-
-    const interviewReport = await interviewReportModel.findOne({ _id: interviewId, user: req.user.id })
-
-    if (!interviewReport) {
-        return res.status(404).json({
-            message: "Interview report not found."
-        })
-    }
-
-    const { resume, jobDescription, selfDescription } = interviewReport
-
-    const interViewReportByAi = await generateInterviewReport({
-        resume: resume || "",
-        selfDescription: selfDescription || "",
-        jobDescription: jobDescription || "",
-        roadmapDays: roadmapDaysNumber
-    })
-
-    interviewReport.preparationPlan = interViewReportByAi.preparationPlan || []
-    await interviewReport.save()
-
-    res.status(200).json({
-        message: "Roadmap updated successfully.",
-        interviewReport
-    })
 }
 
 /**
@@ -174,66 +188,73 @@ async function deleteInterviewReportController(req, res) {
  * @description Controller to update an interview report by interviewId.
  */
 async function updateInterviewReportController(req, res) {
-    const { interviewId } = req.params
+    try {
+        const { interviewId } = req.params
 
-    const interviewReport = await interviewReportModel.findOne({ _id: interviewId, user: req.user.id })
+        const interviewReport = await interviewReportModel.findOne({ _id: interviewId, user: req.user.id })
 
-    if (!interviewReport) {
-        return res.status(404).json({
-            message: "Interview report not found."
+        if (!interviewReport) {
+            return res.status(404).json({
+                message: "Interview report not found."
+            })
+        }
+
+        let resumeText = interviewReport.resume || ""
+        if (req.file && req.file.buffer) {
+            const resumeContent = await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText()
+            resumeText = resumeContent.text
+        }
+
+        const jobDescription = typeof req.body.jobDescription === "string"
+            ? req.body.jobDescription
+            : interviewReport.jobDescription
+        const selfDescription = typeof req.body.selfDescription === "string"
+            ? req.body.selfDescription
+            : (interviewReport.selfDescription || "")
+
+        if (!resumeText && !selfDescription.trim()) {
+            return res.status(400).json({
+                message: "Please provide a resume or a short self description."
+            })
+        }
+
+        const requestedRoadmapDays = req.body.roadmapDays ? Number(req.body.roadmapDays) : undefined
+        const existingRoadmapDays = interviewReport.preparationPlan?.length || undefined
+        const roadmapDays = Number.isFinite(requestedRoadmapDays) ? requestedRoadmapDays : existingRoadmapDays
+
+        const interViewReportByAi = await generateInterviewReport({
+            resume: resumeText,
+            selfDescription,
+            jobDescription,
+            roadmapDays
+        })
+
+        if (!Number.isFinite(roadmapDays)) {
+            interViewReportByAi.preparationPlan = []
+        }
+
+        interviewReport.resume = resumeText
+        interviewReport.selfDescription = selfDescription
+        interviewReport.jobDescription = jobDescription
+        interviewReport.matchScore = interViewReportByAi.matchScore
+        interviewReport.technicalQuestions = interViewReportByAi.technicalQuestions || []
+        interviewReport.behavioralQuestions = interViewReportByAi.behavioralQuestions || []
+        interviewReport.skillGaps = interViewReportByAi.skillGaps || []
+        interviewReport.preparationPlan = interViewReportByAi.preparationPlan || []
+        interviewReport.title = interViewReportByAi.title
+
+        await interviewReport.save()
+
+        res.status(200).json({
+            message: "Interview report updated successfully.",
+            interviewReport
+        })
+    } catch (error) {
+        console.error("Interview report update failed:", error?.message || error)
+        return res.status(500).json({
+            message: error?.message || "Failed to update interview report."
         })
     }
-
-    let resumeText = interviewReport.resume || ""
-    if (req.file && req.file.buffer) {
-        const resumeContent = await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText()
-        resumeText = resumeContent.text
-    }
-
-    const jobDescription = typeof req.body.jobDescription === "string"
-        ? req.body.jobDescription
-        : interviewReport.jobDescription
-    const selfDescription = typeof req.body.selfDescription === "string"
-        ? req.body.selfDescription
-        : (interviewReport.selfDescription || "")
-
-    if (!resumeText && !selfDescription.trim()) {
-        return res.status(400).json({
-            message: "Please provide a resume or a short self description."
-        })
-    }
-
-    const requestedRoadmapDays = req.body.roadmapDays ? Number(req.body.roadmapDays) : undefined
-    const existingRoadmapDays = interviewReport.preparationPlan?.length || undefined
-    const roadmapDays = Number.isFinite(requestedRoadmapDays) ? requestedRoadmapDays : existingRoadmapDays
-
-    const interViewReportByAi = await generateInterviewReport({
-        resume: resumeText,
-        selfDescription,
-        jobDescription,
-        roadmapDays
-    })
-
-    if (!Number.isFinite(roadmapDays)) {
-        interViewReportByAi.preparationPlan = []
-    }
-
-    interviewReport.resume = resumeText
-    interviewReport.selfDescription = selfDescription
-    interviewReport.jobDescription = jobDescription
-    interviewReport.matchScore = interViewReportByAi.matchScore
-    interviewReport.technicalQuestions = interViewReportByAi.technicalQuestions || []
-    interviewReport.behavioralQuestions = interViewReportByAi.behavioralQuestions || []
-    interviewReport.skillGaps = interViewReportByAi.skillGaps || []
-    interviewReport.preparationPlan = interViewReportByAi.preparationPlan || []
-    interviewReport.title = interViewReportByAi.title
-
-    await interviewReport.save()
-
-    res.status(200).json({
-        message: "Interview report updated successfully.",
-        interviewReport
-    })
 }
 
 /**
