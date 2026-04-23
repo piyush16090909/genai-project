@@ -1,4 +1,5 @@
 import os
+import traceback
 from typing import List, Literal, Optional
 
 from dotenv import load_dotenv
@@ -184,6 +185,8 @@ def interview_report(payload: InterviewReportRequest) -> InterviewReport:
 
         return result
     except Exception as exc:
+        print("AI /interview-report failed:", repr(exc))
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(exc))
 
 
@@ -214,6 +217,8 @@ def resume_html(payload: ResumeHtmlRequest) -> ResumeHtmlResponse:
         result = chain.invoke(prompt)
         return result
     except Exception as exc:
+        print("AI /resume-html failed:", repr(exc))
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(exc))
 
 @app.get("/")
@@ -251,6 +256,8 @@ def interview(req: InterviewRequest):
             "resume_data": resume_data
         }
     except Exception as exc:
+        print("AI /interview failed:", repr(exc))
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(exc))
 
 @app.post("/chat", response_model=ChatResponse)
@@ -314,4 +321,6 @@ def chat(payload: ChatRequest) -> ChatResponse:
 
         return ChatResponse(reply=result.content)
     except Exception as exc:
+        print("AI /chat failed:", repr(exc))
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(exc))
