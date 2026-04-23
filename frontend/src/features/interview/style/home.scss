@@ -919,6 +919,28 @@
     }
 
     @media (max-width: 900px) {
+        .top-bar {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1rem;
+            padding: 1.1rem 1rem;
+
+            .brand {
+                text-align: center;
+            }
+
+            &__actions {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .btn-new,
+            .btn-resume,
+            .logout-button {
+                flex: 1 1 180px;
+            }
+        }
+
         .delete-report-modal {
             &__actions {
                 flex-direction: column-reverse;
@@ -941,6 +963,111 @@
 
         .recent-reports__actions {
             flex-wrap: wrap;
+        }
+
+        .recent-reports {
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .create-plan-view {
+            margin: 2.5rem auto;
+            padding: 0 1rem;
+
+            .page-header {
+                margin-bottom: 2rem;
+
+                h1 {
+                    font-size: clamp(2.2rem, 8vw, 3rem);
+                }
+
+                p {
+                    font-size: 1rem;
+                }
+            }
+
+            .panel {
+                padding: 1.25rem;
+            }
+
+            .interview-action-footer {
+                margin-top: 2rem;
+
+                .generate-btn {
+                    width: 100%;
+                    justify-content: center;
+                    padding: 1rem 1.25rem;
+                }
+            }
+        }
+    }
+
+    @media (max-width: 640px) {
+        .top-bar {
+            .brand {
+                font-size: 1.3rem;
+            }
+
+            &__actions {
+                flex-direction: column;
+            }
+
+            .theme-nav-toggle,
+            .btn-new,
+            .btn-resume,
+            .logout-button {
+                width: 100%;
+            }
+        }
+
+        .recent-reports {
+            &__header h2 {
+                font-size: 1.7rem;
+            }
+        }
+
+        .reports-list {
+            grid-template-columns: 1fr !important;
+        }
+
+        .report-item {
+            padding: 1.1rem !important;
+        }
+
+        .create-plan-view {
+            .page-header {
+                &__tag {
+                    letter-spacing: 1px;
+                }
+
+                h1 {
+                    font-size: clamp(1.9rem, 10vw, 2.4rem);
+                }
+            }
+
+            .panel {
+                border-radius: 16px;
+
+                &__header {
+                    flex-wrap: wrap;
+                    align-items: flex-start;
+                }
+            }
+
+            .upload-section .upload-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .interview-action-footer {
+                .footer-info {
+                    width: 100%;
+                    justify-content: center;
+                    text-align: center;
+                    flex-wrap: wrap;
+                }
+            }
         }
     }
 }

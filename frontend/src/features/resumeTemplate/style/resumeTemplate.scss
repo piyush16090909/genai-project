@@ -403,6 +403,7 @@ $font-stack: "Space Grotesk", "Instrument Sans", sans-serif;
 
     .resume-template-actions {
         width: 100%;
+        flex-wrap: wrap;
 
         button {
             flex: 1;

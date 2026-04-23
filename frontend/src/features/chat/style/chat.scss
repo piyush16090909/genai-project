@@ -311,8 +311,18 @@ $font-stack: "Space Grotesk", "Instrument Sans", sans-serif;
         justify-content: flex-start;
     }
 
+    .chat-action {
+        flex: 1 1 140px;
+        justify-content: center;
+    }
+
     .chat-message__content {
         max-width: 88%;
+    }
+
+    .chat-messages {
+        padding-left: 0.55rem;
+        padding-right: 0.55rem;
     }
 
     .chat-input {
@@ -323,5 +333,23 @@ $font-stack: "Space Grotesk", "Instrument Sans", sans-serif;
             width: 100%;
             min-width: 0;
         }
+    }
+}
+
+@media (max-width: 520px) {
+    .chat-header,
+    .chat-context-row,
+    .chat-quick-prompts,
+    .chat-input {
+        padding-left: 0.55rem;
+        padding-right: 0.55rem;
+    }
+
+    .chat-header h1 {
+        font-size: 1.2rem;
+    }
+
+    .chat-message__content {
+        max-width: 94%;
     }
 }
