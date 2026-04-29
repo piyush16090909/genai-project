@@ -126,6 +126,20 @@ class ChatResponse(BaseModel):
 
 
 def get_llm():
+    # Prefer GROQ if a GROQ API key is provided
+    groq_key = os.getenv("GROQ_API_KEY")
+    if groq_key:
+        try:
+            from langchain_groq import ChatGroqAI
+        except ImportError as exc:
+            raise RuntimeError(
+                "langchain-groq is not installed. Run: pip install langchain langchain-groq"
+            ) from exc
+
+        model_name = os.getenv("GROQ_MODEL", "groq-1")
+        return ChatGroqAI(api_key=groq_key, model=model_name, temperature=0)
+
+    # Fallback to Mistral if GROQ not configured
     try:
         from langchain_mistralai import ChatMistralAI
     except ImportError as exc:
@@ -135,9 +149,8 @@ def get_llm():
 
     api_key = os.getenv("MISTRAL_API_KEY")
     if not api_key:
-        raise RuntimeError("MISTRAL_API_KEY is not set")
-
-    model_name = os.getenv("MISTRAL_MODEL", "mistral-large-2512")
+        raise RuntimeError("No API key found. Set GROQ_API_KEY or MISTRAL_API_KEY in your environment")
+    model_name = os.getenv("GROQ_MODEL", "llama3-70b-8192")
     return ChatMistralAI(api_key=api_key, model=model_name, temperature=0)
 
 
