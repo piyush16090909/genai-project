@@ -18,6 +18,12 @@ for env_path in ENV_CANDIDATES:
     if os.path.exists(env_path):
         load_dotenv(env_path, override=False)
 
+import sys
+# Ensure the package's directory is on sys.path so local imports like
+# `from agents.interview_agent import ...` work when running uvicorn
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
 from agents.interview_agent import generate_question, evaluate_answer
 from utils.resume_praser import extract_resume_data
 
@@ -150,7 +156,7 @@ def get_llm():
     api_key = os.getenv("MISTRAL_API_KEY")
     if not api_key:
         raise RuntimeError("No API key found. Set GROQ_API_KEY or MISTRAL_API_KEY in your environment")
-    model_name = os.getenv("GROQ_MODEL", "llama3-70b-8192")
+    model_name = os.getenv("MISTRAL_MODEL", "mistral-1")
     return ChatMistralAI(api_key=api_key, model=model_name, temperature=0)
 
 

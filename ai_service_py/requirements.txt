@@ -1,3 +1,11 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+pydantic
+langchain
+langchain-groq
+langchain-mistralai
+requests
 fastapi==0.115.6
 uvicorn==0.30.6
 langchain==0.3.7
